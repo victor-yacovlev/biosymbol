@@ -106,7 +106,7 @@ Requires:	%python_name_prefix-pysqlite
 Requires:	%python_name_prefix-soappy
 Requires:	%python_name_prefix-SQLAlchemy
 Requires:	%python_name_prefix-biopython
-Requires:	sqlite3
+Requires:	/usr/bin/sqlite3
 Requires:	%name-soap-db-schema = %version
 
 %description -n %name-soap-server
@@ -147,7 +147,7 @@ then
 fi
 if [ ! -f /var/db/biosymbol/parca_soap.sqlite3 ]
 then
-    cat /usr/share/biosymbol/parca_soap_db_schema.sql | sqlite3 /var/db/biosymbol/parca_soap.sqlite3
+    cat /usr/share/biosymbol/parca_soap_db_schema.sql | /usr/bin/sqlite3 /var/db/biosymbol/parca_soap.sqlite3
     chown nobody /var/db/biosymbol/parca_soap.sqlite3
     chgrp nogroup /var/db/biosymbol/parca_soap.sqlite3
 fi
