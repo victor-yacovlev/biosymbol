@@ -1,0 +1,22 @@
+CREATE TABLE parca_jobs (
+        id INTEGER NOT NULL, 
+        ip VARCHAR(20), 
+        comment VARCHAR(100), 
+        accept_datetime DATETIME, 
+        start_datetime DATETIME, 
+        finish_datetime DATETIME, 
+        status INTEGER, 
+        error_string VARCHAR(30), 
+        sequence1 VARCHAR(3000), 
+        sequence2 VARCHAR(3000), 
+        name1 VARCHAR(40), 
+        name2 VARCHAR(40), 
+        matrix_name VARCHAR(10), 
+        gep FLOAT, 
+        gap_limit INTEGER, 
+        gop FLOAT, 
+        golden_standard TEXT, 
+        alignment_infos TEXT, 
+        alignments TEXT, 
+        PRIMARY KEY (id)
+);
