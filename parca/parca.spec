@@ -106,7 +106,8 @@ Requires:	%python_name_prefix-pysqlite
 Requires:	%python_name_prefix-soappy
 Requires:	%python_name_prefix-SQLAlchemy
 Requires:	%python_name_prefix-biopython
-Requires:	/usr/bin/sqlite3
+Requires:	sqlite3
+BuildRequires:	sqlite3
 Requires:	%name-soap-db-schema = %version
 
 %description -n %name-soap-server
