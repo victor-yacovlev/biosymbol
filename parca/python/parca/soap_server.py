@@ -19,6 +19,9 @@ import select
 import logging
 import socket
 import bioformats
+import warnings
+
+warnings.filterwarnings("ignore")
 
 DATABASE = "sqlite:///"
 HOST = "*" # listen on all interfaces
@@ -27,6 +30,7 @@ TEMPDIR = tempfile.gettempdir()
 WORKERS = 4
 WORKER_CHECK_TIMEOUT = 2
 PIDFILE = None
+LOGFILE = ""
 
 for arg in sys.argv:
     if arg.startswith("--db="):
@@ -47,17 +51,23 @@ if PIDFILE:
     f.write(str(os.getpid()))
     f.close()
 
-if __name__=="__main__" and not "--worker" in sys.argv and not "--init" in sys.argv:
+if __name__=="__main__" and not "--init" in sys.argv:
     logname = None
     for arg in sys.argv:
         if arg.startswith("--log="):
-            logname = arg[6:]
+            LOGFILE = arg[6:]
+            if LOGFILE:
+                logname = arg[6:]
     logging.basicConfig(filename=logname, format='%(asctime)-6s: %(levelname)s - %(message)s')
-    log = logging.getLogger()
-    log.setLevel(logging.INFO)
-    log.info("Using database "+DATABASE)
-    log.info("Running at "+HOST+" on port "+str(PORT))
-    log.info("Using PID file "+str(PIDFILE))
+    if not "--worker" in sys.argv:
+        log = logging.getLogger()
+        log.setLevel(logging.INFO)
+        log.info("Using database "+DATABASE)
+        log.info("Running at "+HOST+" on port "+str(PORT))
+        log.info("Using PID file "+str(PIDFILE))
+    else:
+        log = logging.getLogger("worker")
+        log.setLevel(logging.INFO)
     
     
 engine = create_engine(DATABASE, echo=False)
@@ -122,6 +132,8 @@ class ParcaJob(Base):
         self.error_string = ""
     
 def process_job(job, session):
+    if log:
+        log.info("Processing job %d by worker %d" % (job.id, os.getpid()))
     if not parca.__dict__.has_key(job.matrix_name):
         job.error_string = "No matrix found: "+job.matrix_name
         return
@@ -156,6 +168,7 @@ def process_job(job, session):
     else:
         job.status = ST_DONE
     session.commit()
+    log.info("Worker %d has finished job %d" % (os.getpid(), job.id))
     
 
 def start_new_job(ip, seq1, seq2, name1, name2, comment="", limit=40, gep=1.0, matr="blosum62"):
@@ -255,14 +268,14 @@ def get_alignment_as_string(id, no, fmt="emboss"):
     session = Session()
     query = session.query(ParcaJob).filter(ParcaJob.id==id)
     if query.count()==0:
-        return "ERROR: Wrong id"
+        return "ERROR: Wrong id", ""
     job = query.first()
     if job.status!=ST_DONE:
-        return "ERROR: Job not complete"
+        return "ERROR: Job not complete", ""
     res = json.loads(job.alignments)
     inf = json.loads(job.alignment_infos)
     if no>=len(res):
-        return "ERROR: Wrong alignment number"
+        return "ERROR: Wrong alignment number", ""
     gep = job.gep
     gop = inf[no]["MinGOP"], inf[no]["MaxGOP"]
     al = res[no]["data"]
@@ -272,7 +285,10 @@ def get_alignment_as_string(id, no, fmt="emboss"):
     name2 = job.name2
     seq1 = job.sequence1
     seq2 = job.sequence2
+    finish_datetime = job.finish_datetime
     m = inf[no]["m"]
+    err = ""
+    s = ""
     try:
         s = bioformats.proteins_alignment_to_string(
                 al, seq1, seq2, name1, name2, fmt,
@@ -280,8 +296,9 @@ def get_alignment_as_string(id, no, fmt="emboss"):
                 "parca-soap-server", None, m
                 )
     except bioformats.BioFormatException as e:
-        s = "ERROR: "+str(e.text)
-    return s
+        err = "ERROR: "+str(e.text)
+        log.error("Tried to get '%s' representaion of %d:%d: %s" % (fmt, job.id, no, e.text))
+    return err, s
 
 def get_raw_alignment(id, no):
     session = Session()
@@ -346,6 +363,7 @@ def parse_sequences(buff, fmt):
     except bioformats.BioFormatException as e:
         result = []
         err = e.text
+    result = map(lambda x: {"id": x[0], "seq": x[1]}, result)
     return err, result
 
 PROCS = []
@@ -376,13 +394,15 @@ if __name__=="__main__" and "--init" in sys.argv:
     ParcaJob.metadata.create_all(engine)
 
 elif __name__=="__main__" and "--worker" in sys.argv:
+    log.info("Worker %d boostrapping" % os.getpid())
     try:
         ParcaJob.metadata.create_all(engine)
-    except sqlalchemy.exc.OperationalError:
+    except sqlalchemy.exc.OperationalError as e:
         sys.exit(1)
+        log.error("Worker %d: can't open database: %s" % (os.getpid(), str(e)))
     signal.signal(signal.SIGTERM, exit_handler_worker)
     signal.signal(signal.SIGINT, exit_handler_worker)
-    
+    log.info("Worker %d is waiting for tasks" % os.getpid())
     while True:
         session = Session()
         query = session.query(ParcaJob).filter(ParcaJob.status==ST_WAITING).order_by(ParcaJob.accept_datetime).limit(1)
@@ -419,7 +439,7 @@ elif __name__=="__main__" and not "--worker" in sys.argv:
         sys.exit(1)
     script_path = os.path.abspath(__file__)
     python_path = sys.executable
-    args = [python_path, script_path, "--worker"]
+    args = [python_path, script_path, "--worker", "--db="+DATABASE, "--log="+LOGFILE]
     for i in range(0, WORKERS):
         proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         log.info("Started worker: "+str(proc.pid))
