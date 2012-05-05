@@ -74,6 +74,7 @@ rm -rf %buildroot
 %package -n %python_name_prefix-%name
 Summary:        Python module for PARCA
 Requires:       python >= 2.7
+Requires:	%python_name_prefix-bioformats
 
 %description -n %python_name_prefix-%name
 Python module for PARCA scripting
