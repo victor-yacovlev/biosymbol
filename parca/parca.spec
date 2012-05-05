@@ -16,6 +16,7 @@ Group:		Developmet/Libraries/Python
 Requires:       %python_name_prefix-%name = %version
 Requires:       %_bindir/python2.7
 Requires:	%python_name_prefix-biopython
+Requires:	%python_name_prefix-bioformats
 
 BuildRequires:  gcc-c++
 BuildRequires:  cmake >= 2.8.3
