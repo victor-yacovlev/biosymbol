@@ -100,12 +100,6 @@ class ParcaJob(Base):
     # Maximum number of gaps
     gap_limit = Column(Integer)
 
-    # Field for matching SW-alignment
-    gop = Column(Float)
-
-    # Field to match golden standard alignment
-    golden_standard = Column(Text)
-
     # Alignments information stored in JSON format:
     # [ { "m", "g", "Acc", "Conf", "MinGOP", "MaxGOP" } ]
     alignment_infos = Column(Text)
@@ -113,7 +107,7 @@ class ParcaJob(Base):
     # [ { "data" } ]
     alignments = Column(Text)
 
-    def __init__(self, ip, seq1, seq2, name1, name2, comment="", limit=40, gep=1.0, matr="blosum62", gop=-1.0, gs=None):
+    def __init__(self, ip, seq1, seq2, name1, name2, comment="", limit=40, gep=1.0, matr="blosum62"):
         self.ip = ip
         self.sequence1 = seq1
         self.sequence2 = seq2
@@ -123,11 +117,6 @@ class ParcaJob(Base):
         self.gap_limit = limit
         self.gep = gep
         self.matrix_name = matr
-        self.gop = gop
-        if not gs is None:
-            self.js = json.dumps(gs)
-        else:
-            self.js = ""
         self.accept_datetime = datetime.datetime.now()
         self.status = ST_WAITING
         self.error_string = ""
@@ -148,7 +137,7 @@ def process_job(job, session):
         for a, b in al.data:
             d += [(a,b)]
         res += [{"data": d}]
-        inf += [{"m": al.m, "g": al.g, "Acc": None, "Conf": None, "MinGOP": -1, "MaxGOP": -1, "Score": None, "Rating": None}]
+        inf += [{"m": al.m, "g": al.g, "MinGOP": -1, "MaxGOP": -1, "Score": None, "Rating": None}]
     job.alignments = json.dumps(res)
     gops = parca.calculate_gops(pareto_als)
     for i in range(0,len(pareto_als)):
@@ -169,9 +158,9 @@ def process_job(job, session):
     session.commit()
     
 
-def start_new_job(ip, seq1, seq2, name1, name2, comment="", limit=40, gep=1.0, matr="blosum62", gop=-1.0, gs=None):
+def start_new_job(ip, seq1, seq2, name1, name2, comment="", limit=40, gep=1.0, matr="blosum62"):
     session = Session()
-    job = ParcaJob(ip, seq1, seq2, name1, name2, comment, limit, gep, matr, gop, gs)
+    job = ParcaJob(ip, seq1, seq2, name1, name2, comment, limit, gep, matr)
     session.add(job)
     session.commit()
     return job.id
@@ -262,7 +251,7 @@ def get_alignments_count(id):
         return 0
     return len(json.loads(infos))
 
-def get_alignment_as_string(id, no, fmt):
+def get_alignment_as_string(id, no, fmt="emboss"):
     session = Session()
     query = session.query(ParcaJob).filter(ParcaJob.id==id)
     if query.count()==0:
@@ -334,7 +323,7 @@ def get_alignments_summary(id):
         item["no"] = i
         als += [item]
     result = {
-        "title" : comment,
+        "comment" : comment,
         "sequence1": s1,
         "sequence2": s2,
         "name1": name1,
