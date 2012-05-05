@@ -89,6 +89,7 @@ Python module for PARCA scripting
 
 %package -n %name-soap-db-schema
 Summary:	DB schema for SOAP service
+BuildArch:	noarch
 
 %description -n %name-soap-db-schema
 See 6.1.3.1 (5)
