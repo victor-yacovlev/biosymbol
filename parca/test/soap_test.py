@@ -1,7 +1,7 @@
 import SOAPpy
 import time
 
-HOST = "localhost"
+HOST = "server2.lpm.org.ru"
 PORT = 8050
 CHECK_TIMEOUT = 1
 FASTA1 = "test1.fasta"
