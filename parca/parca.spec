@@ -59,8 +59,8 @@ mkdir -p %buildroot/etc/init.d/
 #cp parca_soap.conf %buildroot/etc/biosymbol/
 cp parca_server %buildroot/etc/init.d/
 mkdir -p %buildroot/var/log/biosymbol/
-mkdir -p %_datadir/biosymbol/
-cp soap_db_schema.sql %_datadir/biosymbol/parca_soap_db_schema.sql
+mkdir -p %buildroot/%_datadir/biosymbol/
+cp soap_db_schema.sql %buildroot/%_datadir/biosymbol/parca_soap_db_schema.sql
 
 %clean
 rm -rf %buildroot
