@@ -15,6 +15,7 @@ Group:		Developmet/Libraries/Python
 
 Requires:       %python_name_prefix-%name = %version
 Requires:       %_bindir/python2.7
+Requires:	%python_name_prefix-biopython
 
 BuildRequires:  gcc-c++
 BuildRequires:  cmake >= 2.8.3
@@ -51,14 +52,15 @@ popd
 mkdir -p %buildroot/%_bindir/
 cp parca %buildroot/%_bindir/
 echo '#!/bin/bash' >> %buildroot/%_bindir/bio_parca_soap_d
-echo 'python -m parca.soap_server' >> %buildroot/%_bindir/bio_parca_soap_d
+echo 'python -m parca.soap_server $@' >> %buildroot/%_bindir/bio_parca_soap_d
 chmod a+x %buildroot/%_bindir/bio_parca_soap_d
 mkdir -p %buildroot/etc/biosymbol/
 mkdir -p %buildroot/etc/init.d/
 #cp parca_soap.conf %buildroot/etc/biosymbol/
 cp parca_server %buildroot/etc/init.d/
 mkdir -p %buildroot/var/log/biosymbol/
-
+mkdir -p %_datadir/biosymbol/
+cp soap_db_schema.sql %_datadir/biosymbol/parca_soap_db_schema.sql
 
 %clean
 rm -rf %buildroot
@@ -79,12 +81,22 @@ Python module for PARCA scripting
 %defattr(-,root,root)
 %dir %python_sitearch/parca
 %python_sitearch/parca/__init__.py*
-%python_sitearch/parca/MatrixInfo.py*
 %python_sitearch/parca/__main__.py*
 %python_sitearch/parca/_base.py*
 %python_sitearch/parca/_custom_matrices.py*
 %python_sitearch/parca/_util.py*
 %python_sitearch/parca/_parca.so
+
+%package -n %name-soap-db-schema
+Summary:	DB schema for SOAP service
+
+%description -n %name-soap-db-schema
+See 6.1.3.1 (5)
+
+%files -n %name-soap-db-schema
+%defattr(-,root,root)
+%dir %_datadir/biosymbol
+%_datadir/biosymbol/parca_soap_db_schema.sql
 
 %package -n %name-soap-server
 Summary:	SOAP service for PARCA
@@ -93,6 +105,9 @@ Requires:	%python_name_prefix-mysql
 Requires:	%python_name_prefix-pysqlite
 Requires:	%python_name_prefix-soappy
 Requires:	%python_name_prefix-SQLAlchemy
+Requires:	%python_name_prefix-biopython
+Requires:	sqlite3
+Requires:	%name-soap-db-schema = %version
 
 %description -n %name-soap-server
 SOAP service usigng with MySQL database
@@ -112,10 +127,27 @@ SOAP service usigng with MySQL database
 mkdir -p /etc/biosymbol/
 if [ ! -f /etc/biosymbol/parca_soap.conf ]
 then
-    echo "HOST=localohst" > /etc/biosymbol/parca_soap.conf
+    echo "HOST=*" > /etc/biosymbol/parca_soap.conf
     echo "PORT=8050" >> /etc/biosymbol/parca_soap.conf
-    echo "DATABASE=sqlite:///:memory:" >> /etc/biosymbol/parca_soap.conf
+    echo "DATABASE=sqlite:///var/db/biosymbol/parca_soap.sqlite3" >> /etc/biosymbol/parca_soap.conf
     echo "USER=nobody" >> /etc/biosymbol/parca_soap.conf
     echo "GROUP=nogroup" >> /etc/biosymbol/parca_soap.conf
 fi
-
+if [ ! -d /var/run/biosymbol ]
+then
+    mkdir -p /var/run/biosymbol
+    chown nobody /var/run/biosymbol
+    chgrp nogroup /var/run/biosymbol
+fi
+if [ ! -d /var/db/biosymbol ]
+then
+    mkdir -p /var/db/biosymbol
+    chown nobody /var/db/biosymbol
+    chgrp nogroup /var/db/biosymbol
+fi
+if [ ! -f /var/db/biosymbol/parca_soap.sqlite3 ]
+then
+    cat /usr/share/biosymbol/parca_soap_db_schema.sql | sqlite3 /var/db/biosymbol/parca_soap.sqlite3
+    chown nobody /var/db/biosymbol/parca_soap.sqlite3
+    chgrp nogroup /var/db/biosymbol/parca_soap.sqlite3
+fi

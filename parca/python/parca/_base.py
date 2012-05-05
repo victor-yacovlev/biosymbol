@@ -2,7 +2,7 @@ import _parca
 import os
 import os.path
 
-from MatrixInfo import *
+from Bio.SubsMat.MatrixInfo import *
 
 class alignment:
     m = int()

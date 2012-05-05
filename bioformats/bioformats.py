@@ -155,6 +155,7 @@ def __alignment_to_emboss_string__(
     weights=None,
     matrixname=None,
     gep=None,
+    gop=(None, None),
     rundate=None,
     program="parca",
     reportfile=None,
@@ -249,6 +250,10 @@ def __alignment_to_emboss_string__(
     header += "# 2: "+name2+"\n"
     if not matrixname is None:
         header += "# Matrix: E"+matrixname.upper()+"\n"
+    if not gop is None and not gop[0] is None:
+        header += "# Gap_penalty: from %4.1f to %4.1f\n" % gop
+    else:
+        header += "# Gap_penalty: n/a\n"
     if not gep is None:
         header += "# Extend_penalty: "+str(gep)+"\n"
     header += "#\n"
@@ -293,6 +298,7 @@ def proteins_alignment_to_string(
     weights=None,
     matrixname=None,
     gep=None,
+    gop=(None, None),
     rundate=None,
     program="parca",
     reportfile=None,
@@ -307,5 +313,5 @@ def proteins_alignment_to_string(
         return align.format(fmt)
     else:
         return __alignment_to_emboss_string__(seq1, seq2, al, name1, name2,
-                                              weights, matrixname, gep,
+                                              weights, matrixname, gep, gop,
                                               rundate, program, reportfile, score)

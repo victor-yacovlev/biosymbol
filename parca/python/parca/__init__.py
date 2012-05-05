@@ -1,5 +1,5 @@
 import _parca
-from MatrixInfo import *
+from Bio.SubsMat.MatrixInfo import *
 from _base import *
 from _util import *
 

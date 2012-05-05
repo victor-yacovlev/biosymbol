@@ -3,7 +3,6 @@ find_package(PythonInterp)
 set(SOURCES
   __init__.py
   __main__.py
-  MatrixInfo.py
   _base.py
   _util.py
   _custom_matrices.py

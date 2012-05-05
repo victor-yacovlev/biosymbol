@@ -1,6 +1,6 @@
 import _base
 import _util
-import MatrixInfo
+import Bio.SubsMat.MatrixInfo as MatrixInfo
 import _custom_matrices
 
 import sys
@@ -90,8 +90,10 @@ if __name__=="__main__":
         sys.stderr.write("Error: "+err+"\n")
         sys.exit(7)
     primary = _util.get_primary_alignments(als)
-    for pa in primary:
+    gops = _util.calculate_gops(primary)
+    for index, pa in enumerate(primary):
         #out.write("\n# Score = %i, Deletions = %i, Gaps = %i \n" % (pa.m, pa.d, pa.g))
+        gop = gops[index]
         s = bioformats.proteins_alignment_to_string(
             pa.data,
             seq1,
@@ -102,6 +104,7 @@ if __name__=="__main__":
             matrix,
             mn,
             gep,
+            gop,
             rundate,
             "parca",
             outname,

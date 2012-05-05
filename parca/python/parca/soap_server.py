@@ -11,15 +11,18 @@ import os.path
 from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+import sqlalchemy.exc
 import tempfile
 import time
 import signal
 import select
 import logging
+import socket
+import bioformats
 
-DATABASE = "mysql://root@localhost/parca_soap_test"
-HOST = "localhost"
-PORT = 8070
+DATABASE = "sqlite:///"
+HOST = "*" # listen on all interfaces
+PORT = 8050
 TEMPDIR = tempfile.gettempdir()
 WORKERS = 4
 WORKER_CHECK_TIMEOUT = 2
@@ -54,6 +57,7 @@ if __name__=="__main__" and not "--worker" in sys.argv and not "--init" in sys.a
     log.setLevel(logging.INFO)
     log.info("Using database "+DATABASE)
     log.info("Running at "+HOST+" on port "+str(PORT))
+    log.info("Using PID file "+str(PIDFILE))
     
     
 engine = create_engine(DATABASE, echo=False)
@@ -74,9 +78,8 @@ class ParcaJob(Base):
     id = Column(Integer, primary_key=True)
     # IP-address of owner client 
     ip = Column(String(20))
-    # any strings
-    title = Column(String(50))
-    tag = Column(String(50))
+    # any string
+    comment = Column(String(100))
     # date/time of job start and finish and status
     accept_datetime = Column(DateTime)
     start_datetime = Column(DateTime)
@@ -87,12 +90,21 @@ class ParcaJob(Base):
     # source sequences
     sequence1 = Column(String(3000))
     sequence2 = Column(String(3000))
+    name1 = Column(String(40))
+    name2 = Column(String(40))
+    
     # matrix to use
     matrix_name = Column(String(10))
     # Gap Elongation Penalty
     gep = Column(Float)
     # Maximum number of gaps
     gap_limit = Column(Integer)
+
+    # Field for matching SW-alignment
+    gop = Column(Float)
+
+    # Field to match golden standard alignment
+    golden_standard = Column(Text)
 
     # Alignments information stored in JSON format:
     # [ { "m", "g", "Acc", "Conf", "MinGOP", "MaxGOP" } ]
@@ -101,15 +113,21 @@ class ParcaJob(Base):
     # [ { "data" } ]
     alignments = Column(Text)
 
-    def __init__(self, ip, title, seq1, seq2, tag="", limit=40, gep=1.0, matr="blosum62"):
+    def __init__(self, ip, seq1, seq2, name1, name2, comment="", limit=40, gep=1.0, matr="blosum62", gop=-1.0, gs=None):
         self.ip = ip
         self.sequence1 = seq1
         self.sequence2 = seq2
-        self.title = title
-        self.tag = tag
+        self.name1 = name1
+        self.name2 = name2
+        self.comment = comment
         self.gap_limit = limit
         self.gep = gep
         self.matrix_name = matr
+        self.gop = gop
+        if not gs is None:
+            self.js = json.dumps(gs)
+        else:
+            self.js = ""
         self.accept_datetime = datetime.datetime.now()
         self.status = ST_WAITING
         self.error_string = ""
@@ -151,9 +169,9 @@ def process_job(job, session):
     session.commit()
     
 
-def start_new_job(ip, title, seq1, seq2, tag="", limit=40, gep=1.0, matr="blosum62"):
+def start_new_job(ip, seq1, seq2, name1, name2, comment="", limit=40, gep=1.0, matr="blosum62", gop=-1.0, gs=None):
     session = Session()
-    job = ParcaJob(ip, title, seq1, seq2, tag, limit, gep, matr)
+    job = ParcaJob(ip, seq1, seq2, name1, name2, comment, limit, gep, matr, gop, gs)
     session.add(job)
     session.commit()
     return job.id
@@ -181,14 +199,13 @@ def list_jobs_for_ip(ip):
     session = Session()
     query = session.query(
         ParcaJob.id,
-        ParcaJob.title,
-        ParcaJob.tag,
+        ParcaJob.comment,
         ParcaJob.accept_datetime,
         ParcaJob.status,
         ParcaJob.error_string
         ).filter(ParcaJob.ip==ip).all()
     res = []
-    for id, title, tag, accept_datetime, status in query:
+    for id, comment, accept_datetime, status in query:
         if status==ST_ERROR:
             status = "ERROR"
         elif status==ST_DONE:
@@ -199,8 +216,7 @@ def list_jobs_for_ip(ip):
             status = "WORKING"
         res += [ {
             "id": id,
-            "title": title,
-            "tag": tag,
+            "comment": comment,
             "start": accept_datetime,
             "status": status
             }]
@@ -210,14 +226,13 @@ def list_all_jobs():
     session = Session()
     query = session.query(
         ParcaJob.id,
-        ParcaJob.title,
-        ParcaJob.tag,
+        ParcaJob.comment,
         ParcaJob.accept_datetime,
         ParcaJob.status,
         ParcaJob.error_string
         ).all()
     res = []
-    for id, title, tag, accept_datetime, status in query:
+    for id, comment, accept_datetime, status in query:
         if status==ST_ERROR:
             status = "ERROR"
         elif status==ST_DONE:
@@ -228,8 +243,7 @@ def list_all_jobs():
             status = "WORKING"
         res += [ {
             "id": id,
-            "title": title,
-            "tag": tag,
+            "comment": comment,
             "start": accept_datetime,
             "status": status
             }]
@@ -248,52 +262,60 @@ def get_alignments_count(id):
         return 0
     return len(json.loads(infos))
 
-def get_alignment(id, no):
+def get_alignment_as_string(id, no, fmt):
     session = Session()
     query = session.query(ParcaJob).filter(ParcaJob.id==id)
     if query.count()==0:
-        return ""
+        return "ERROR: Wrong id"
     job = query.first()
     if job.status!=ST_DONE:
-        return ""
+        return "ERROR: Job not complete"
     res = json.loads(job.alignments)
     inf = json.loads(job.alignment_infos)
     if no>=len(res):
-        return ""
-    minGOP = "n/a"
-    maxGOP = "n/a"
-    if not inf[no]["MinGOP"] is None:
-        minGOP = str(inf[no]["MinGOP"])
-    if not inf[no]["MaxGOP"] is None:
-        maxGOP = str(inf[no]["MaxGOP"])
-    rating = "not rated"
-    score = "n/a"
-    if not inf[no]["Score"] is None:
-        rating = str(inf[no]["Rating"])
-        score = str(inf[no]["Score"])
+        return "ERROR: Wrong alignment number"
+    gep = job.gep
+    gop = inf[no]["MinGOP"], inf[no]["MaxGOP"]
     al = res[no]["data"]
-    s  = "; TITLE:             "+job.title+"\n"
-    s += "; TAG:               "+job.tag+"\n"
-    s += "; MATCH SCORE:       "+str(inf[no]["m"])+"\n"
-    s += "; GAPS COUNT:        "+str(inf[no]["g"])+"\n"
-    s += "; MINIMUM GOP VALUE: "+minGOP+"\n"
-    s += "; MAXIMUM GOP VALUE: "+maxGOP+"\n"
-    s += "; RATING:            "+rating+"\n"
-    s += "; SCORE:             "+score+"\n"
-    s += "; \n"
-    
+    mn = job.matrix_name
     matr = parca.__dict__[job.matrix_name]
-    s += parca.alignment_to_string(job.sequence1, job.sequence2, res[no]["data"], None, matr)
+    name1 = job.name1
+    name2 = job.name2
+    seq1 = job.sequence1
+    seq2 = job.sequence2
+    m = inf[no]["m"]
+    try:
+        s = bioformats.proteins_alignment_to_string(
+                al, seq1, seq2, name1, name2, fmt,
+                matr, mn, gep, gop, finish_datetime,
+                "parca-soap-server", None, m
+                )
+    except bioformats.BioFormatException as e:
+        s = "ERROR: "+str(e.text)
     return s
+
+def get_raw_alignment(id, no):
+    session = Session()
+    query = session.query(ParcaJob).filter(ParcaJob.id==id)
+    if query.count()==0:
+        return None
+    job = query.first()
+    if job.status!=ST_DONE:
+        return None
+    res = json.loads(job.alignments)
+    if no>=len(res):
+        return None
+    return res[no]
 
 def get_alignments_summary(id):
     session = Session()
     query = session.query(
-        ParcaJob.title,
-        ParcaJob.tag,
+        ParcaJob.comment,
         ParcaJob.start_datetime,
         ParcaJob.sequence1,
         ParcaJob.sequence2,
+        ParcaJob.name1,
+        ParcaJob.name2,
         ParcaJob.status,
         ParcaJob.alignment_infos,
         ParcaJob.matrix_name,
@@ -302,7 +324,7 @@ def get_alignments_summary(id):
         ).filter(ParcaJob.id==id)
     if query.count()==0:
         return None
-    title, tag, start, s1, s2, status, inf, matr, gep ,limit = query.first()
+    comment, start, s1, s2, name1, name2, status, inf, matr, gep ,limit = query.first()
     if status!=ST_DONE:
         return None
     inf = json.loads(inf)
@@ -312,16 +334,30 @@ def get_alignments_summary(id):
         item["no"] = i
         als += [item]
     result = {
-        "title" : title,
-        "tag" : tag,
+        "title" : comment,
         "sequence1": s1,
         "sequence2": s2,
+        "name1": name1,
+        "name2": name2,
         "matrix": matr,
         "gep": gep,
         "gap_limit": limit,
         "alignments": als
         }
     return result
+
+def format_by_filename(filename):
+    return bioformats.detect_format(filename)
+
+def parse_sequences(buff, fmt):
+    err = ""
+    result = []
+    try:
+        result = bioformats.read_sequences_from_buffer(buff, fmt)
+    except bioformats.BioFormatException as e:
+        result = []
+        err = e.text
+    return err, result
 
 PROCS = []
 server = None
@@ -351,6 +387,10 @@ if __name__=="__main__" and "--init" in sys.argv:
     ParcaJob.metadata.create_all(engine)
 
 elif __name__=="__main__" and "--worker" in sys.argv:
+    try:
+        ParcaJob.metadata.create_all(engine)
+    except sqlalchemy.exc.OperationalError:
+        sys.exit(1)
     signal.signal(signal.SIGTERM, exit_handler_worker)
     signal.signal(signal.SIGINT, exit_handler_worker)
     
@@ -373,6 +413,21 @@ elif __name__=="__main__" and "--worker" in sys.argv:
     
             
 elif __name__=="__main__" and not "--worker" in sys.argv:
+    try:
+        ParcaJob.metadata.create_all(engine)
+    except sqlalchemy.exc.OperationalError as e:
+        log.error("Can't open database: "+str(e)+". Exiting...")
+        if PIDFILE and os.path.exists(PIDFILE):
+            os.unlink(PIDFILE)
+        sys.exit(2)
+    HOST = HOST.replace("*","")
+    try:
+        server = SOAPpy.ThreadingSOAPServer(addr=(HOST, PORT))
+    except socket.error as e:
+        log.error("Can't create server: "+str(e)+". Exiting...")
+        if PIDFILE and os.path.exists(PIDFILE):
+            os.unlink(PIDFILE)
+        sys.exit(1)
     script_path = os.path.abspath(__file__)
     python_path = sys.executable
     args = [python_path, script_path, "--worker"]
@@ -382,15 +437,17 @@ elif __name__=="__main__" and not "--worker" in sys.argv:
         PROCS += [proc]
     signal.signal(signal.SIGTERM, exit_handler_main)
     signal.signal(signal.SIGINT, exit_handler_main)
-    server = SOAPpy.ThreadingSOAPServer(addr=(HOST, PORT))
     server.registerFunction(start_new_job)
     server.registerFunction(get_job_status)
     server.registerFunction(list_jobs_for_ip)
     server.registerFunction(list_all_jobs)
     server.registerFunction(get_alignments_count)
-    server.registerFunction(get_alignment)
+    server.registerFunction(get_raw_alignment)
+    server.registerFunction(get_alignment_as_string)
     server.registerFunction(get_alignments_summary)
     server.registerFunction(get_error)
+    server.registerFunction(format_by_filename)
+    server.registerFunction(parse_sequences)
     try:
         server.serve_forever()
     except select.error:
