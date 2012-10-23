@@ -17,6 +17,10 @@ def _print_usage_and_exit(code):
     sys.stderr.write("\t--outfmt\toutput format (fasta, clustal, emboss) (default: emboss)\n")
     sys.exit(code)
     
+def _run_selftest_and_exit():
+    import _test
+    # module "_test" should exit with corresponding exit status
+    
 if __name__=="__main__":
     file1name = None
     file2name = None
@@ -26,6 +30,7 @@ if __name__=="__main__":
     outfmt = "emboss"
     outname = None
     rundate = datetime.now()
+    run_selftest = False
     for arg in sys.argv[1:]:
         if arg.startswith("--gep="):
             try:
@@ -43,12 +48,14 @@ if __name__=="__main__":
                 sys.exit(3)
         elif arg.startswith("--out="):
             outname = arg[6:]
-            out = f.open(outname, 'w')
+            out = open(outname, 'w')
         elif arg.startswith("--outfmt="):
             outfmt = arg[9:]
-            if not outfmt in ["fasta","clustal","emboss"]:
+            if not outfmt in ["fasta","clustal","emboss","fastq"]:
                 sys.stderr.write("Error: unknown output format\n")
                 sys.exit(4)
+        elif arg=="--selftest":
+            run_selftest = True
         elif arg.startswith("-"):
             _print_usage_and_exit(0)
         else:
@@ -56,7 +63,10 @@ if __name__=="__main__":
                 file1name = arg
             else:
                 file2name = arg
-           
+    
+    if run_selftest:
+        _run_selftest_and_exit()
+    
     if file1name is None:
         _print_usage_and_exit(0)
     seqs = []
@@ -78,11 +88,21 @@ if __name__=="__main__":
     
     name1, seq1 = seqs[0]
     name2, seq2 = seqs[1]
+    seq1 = seq1.upper()
+    seq2 = seq2.upper()
     if not mn in ["pam360", "pam480", "pam240"]:
         matrix = MatrixInfo.__dict__[mn]
     else:
         matrix = _custom_matrices.__dict__[mn]
-    
+    ALPHABET = "ARNDCEQGHILKMFPSTWYV"
+    for ch in seq1:
+        if not ch in ALPHABET:
+            sys.stderr.write("Error: first sequence contains symbol out of alphabet\n");
+            sys.exit(8)
+    for ch in seq2:
+        if not ch in ALPHABET:
+            sys.stderr.write("Error: second sequence contains symbol out of alphabet\n");
+            sys.exit(8)
     sys.stderr.write("Please wait...\n")
     als = _base.get_pareto_alignments(seq1,seq2,gep,matrix,40)
     err = _base.get_last_error()

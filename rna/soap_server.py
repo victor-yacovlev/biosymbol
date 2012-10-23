@@ -1,7 +1,7 @@
 #!/bin/env python
 
 import SOAPpy
-import parca
+import _rna
 import json
 import subprocess
 import datetime
@@ -26,7 +26,7 @@ warnings.filterwarnings("ignore")
 
 DATABASE = "sqlite:///"
 HOST = "*" # listen on all interfaces
-PORT = 8050
+PORT = 8052
 TEMPDIR = tempfile.gettempdir()
 WORKERS = 4
 WORKER_CHECK_TIMEOUT = 2
@@ -83,8 +83,8 @@ ST_WORKING = 1
 ST_DONE = 2
 ST_ERROR = 3
 
-class ParcaJob(Base):
-    __tablename__ = 'parca_jobs'
+class RnaJob(Base):
+    __tablename__ = 'rna_jobs'
 
     id = Column(Integer, primary_key=True)
     # IP-address of owner client 
@@ -99,70 +99,58 @@ class ParcaJob(Base):
     error_string = Column(String(30))
     
     # source sequences
-    sequence1 = Column(String(3000))
-    sequence2 = Column(String(3000))
+    rna_data = Column(Text)
     name1 = Column(String(40))
-    name2 = Column(String(40))
     
-    # matrix to use
-    matrix_name = Column(String(10))
     # Gap Elongation Penalty
-    gep = Column(Float)
-    # Maximum number of gaps
-    gap_limit = Column(Integer)
+    gap = Column(Float)
 
+    #Start pos
+    start= Column(Integer)
+
+    #End pos
+    end= Column(Integer)
+
+    #Frame size
+    wlen= Column(Integer)
+
+    #Frame shift
+    wshift= Column(Integer)
+
+    #Seed len
+    seed= Column(Integer)
+
+    
     # Alignments information stored in JSON format:
     # [ { "m", "g", "Acc", "Conf", "MinGOP", "MaxGOP" } ]
-    alignment_infos = Column(Text)
-    # Alignments stored in JSON format:
-    # [ { "data" } ]
-    alignments = Column(Text)
+    result = Column(Text)
 
-    def __init__(self, ip, seq1, seq2, name1, name2, comment="", limit=40, gep=1.0, matr="blosum62"):
+    def __init__(self, ip, rna_data,  name1, comment,  gap=0.25,start=0,end=-1,wlen=3000,wshift=1000,seed=4):
         self.ip = ip
-        self.sequence1 = seq1
-        self.sequence2 = seq2
+        self.rna_data = rna_data
         self.name1 = name1
-        self.name2 = name2
         self.comment = comment
-        self.gap_limit = limit
-        self.gep = gep
-        self.matrix_name = matr
+        self.gap = gap
+        self.start = start
+        self.end = end
+        self.wlen = wlen
+        self.wshift = wshift
+        self.seed = seed
+
         self.accept_datetime = datetime.datetime.now()
         self.status = ST_WAITING
         self.error_string = ""
-    
+
 def process_job(job, session):
     if log:
         log.info("Processing job %d by worker %d" % (job.id, os.getpid()))
-    if not parca.__dict__.has_key(job.matrix_name):
-        job.error_string = "No matrix found: "+job.matrix_name
-        return
-    matr = parca.__dict__[job.matrix_name]
-    parca.set_temporary_directory(TEMPDIR)
-    pareto_als = parca.get_pareto_alignments(job.sequence1, job.sequence2, job.gep, matr, job.gap_limit)
-    job.error_string = parca.get_last_error()
-    res = []
-    inf = []
-    extrs = parca.get_primary_points(pareto_als)
-    for al in pareto_als:
-        d = []
-        for a, b in al.data:
-            d += [(a,b)]
-        res += [{"data": d}]
-        inf += [{"m": al.m, "g": al.g, "MinGOP": -1, "MaxGOP": -1, "Score": None, "Rating": None}]
-    job.alignments = json.dumps(res)
-    gops = parca.calculate_gops(pareto_als)
-    for i in range(0,len(pareto_als)):
-        inf[i]["MinGOP"], inf[i]["MaxGOP"] = gops[i]
-    ratings = []
-    for number, value in extrs:
-        inf[number]["Score"] = value
-    extrs.sort(key=lambda value: value[1], reverse=True)
-    for i in range(0, len(extrs)):
-        number, value = extrs[i]
-        inf[number]["Rating"] = i+1
-    job.alignment_infos = json.dumps(inf)
+        #log.info("Job: %s, %d, %d, %s, %s" % (job.alphabet, job.n, job.p, H, dist))
+    result = _rna.doAll(job.rna_data.encode("ascii"),job.wlen,job.wshift,job.gap,job.start,job.end,job.seed)
+    sres = []
+    for a in result:
+        if a.score>=20:
+            sres += [{"start":a.start,"end":a.end,"score":a.score}]
+    job.result=json.dumps(sres)
     job.finish_time = datetime.datetime.now()
     if len(job.error_string)>0:
         job.status = ST_ERROR
@@ -171,17 +159,45 @@ def process_job(job, session):
     session.commit()
     log.info("Worker %d has finished job %d" % (os.getpid(), job.id))
     
+def format_by_filename(filename):
+    return bioformats.detect_format(filename)
 
-def start_new_job(ip, seq1, seq2, name1, name2, comment="", limit=40, gep=1.0, matr="blosum62"):
+def parse_sequences(buff, fmt):
+    err = ""
+    result = []
+    try:
+        result = bioformats.read_sequences_from_buffer(buff, fmt)
+    except bioformats.BioFormatException as e:
+        result = []
+        err = e.text
+    result = map(lambda x: {"id": x[0], "seq": x[1]}, result)
+    return err, result
+
+
+def start_new_job(ip, file_data, name1,comment,gap,start,end,wlen,wshift,seed):
     session = Session()
-    job = ParcaJob(ip, seq1, seq2, name1, name2, comment, limit, gep, matr)
-    session.add(job)
-    session.commit()
-    return job.id
+    log.info("SOAP start new job: %s, %s, %d, %d, %d, %d, %d" % ( ip, name1,start,end,wlen,wshift,seed ))
+    ftype=format_by_filename(name1)
+    err, sequences = parse_sequences(file_data,ftype)
+    ALPHABET = "ATGCUNatgcun"
+    id = 0
+    if len(err)==0:
+        name = sequences[0]["id"]
+        seq = sequences[0]["seq"]
+        for index, ch in enumerate(seq):
+            if not ch in ALPHABET:
+                err = "Sequence contains symbol out of alphabet: "+ch+" (pos "+str(index)+") "+seq[index-10:index+10]
+                break
+        if len(err)==0:
+            job = RnaJob( ip, seq, name, comment,gap,start,end,wlen,wshift,seed )
+            session.add(job)
+            session.commit()
+            id = job.id
+    return err, id
 
 def get_job_status(job_id):
     session = Session()
-    query = session.query(ParcaJob.status).filter(ParcaJob.id==job_id)
+    query = session.query(RnaJob.status).filter(RnaJob.id==job_id)
     if query.count()==0:
         return "WRONG ID"
     status, = query.first()
@@ -192,7 +208,7 @@ def get_job_status(job_id):
     
 def get_error(job_id):
     session = Session()
-    query = session.query(ParcaJob.error_string).filter(ParcaJob.id==job_id)
+    query = session.query(RnaJob.error_string).filter(RnaJob.id==job_id)
     if query.count()==0:
         return "WRONG ID"
     error_string, = query.first()
@@ -201,12 +217,12 @@ def get_error(job_id):
 def list_jobs_for_ip(ip):
     session = Session()
     query = session.query(
-        ParcaJob.id,
-        ParcaJob.comment,
-        ParcaJob.accept_datetime,
-        ParcaJob.status,
-        ParcaJob.error_string
-        ).filter(ParcaJob.ip==ip).all()
+        RnaJob.id,
+        RnaJob.comment,
+        RnaJob.accept_datetime,
+        RnaJob.status,
+        RnaJob.error_string
+        ).filter(RnaJob.ip==ip).all()
     res = []
     for id, comment, accept_datetime, status, error_string in query:
         if status==ST_ERROR:
@@ -230,11 +246,11 @@ def list_jobs_for_ip(ip):
 def list_all_jobs():
     session = Session()
     query = session.query(
-        ParcaJob.id,
-        ParcaJob.comment,
-        ParcaJob.accept_datetime,
-        ParcaJob.status,
-        ParcaJob.error_string
+        RnaJob.id,
+        RnaJob.comment,
+        RnaJob.accept_datetime,
+        RnaJob.status,
+        RnaJob.error_string
         ).all()
     res = []
     for id, comment, accept_datetime, status, error_string in query:
@@ -256,120 +272,21 @@ def list_all_jobs():
             }]
     return res
 
-def get_alignments_count(id):
+def get_result(id):
     session = Session()
     query = session.query(
-        ParcaJob.status,
-        ParcaJob.alignment_infos
-        ).filter(ParcaJob.id==id)
+        RnaJob.status,
+        RnaJob.result,
+        ).filter(RnaJob.id==id)
     if query.count()==0:
-        return 0
-    status, infos = query.first()
+        result  =  ""
+    else:
+        status, result = query.first()
     if status!=ST_DONE:
-        return 0
-    return len(json.loads(infos))
-
-def get_alignment_as_string(id, no, fmt="emboss"):
-    session = Session()
-    query = session.query(ParcaJob).filter(ParcaJob.id==id)
-    if query.count()==0:
-        return "ERROR: Wrong id", ""
-    job = query.first()
-    if job.status!=ST_DONE:
-        return "ERROR: Job not complete", ""
-    res = json.loads(job.alignments)
-    inf = json.loads(job.alignment_infos)
-    if no>=len(res):
-        return "ERROR: Wrong alignment number", ""
-    gep = job.gep
-    gop = inf[no]["MinGOP"], inf[no]["MaxGOP"]
-    al = res[no]["data"]
-    mn = job.matrix_name
-    matr = parca.__dict__[job.matrix_name]
-    name1 = job.name1
-    name2 = job.name2
-    seq1 = job.sequence1
-    seq2 = job.sequence2
-    finish_datetime = job.finish_datetime
-    m = inf[no]["m"]
-    err = ""
-    s = ""
-    try:
-        s = bioformats.proteins_alignment_to_string(
-                al, seq1, seq2, name1, name2, fmt,
-                matr, mn, gep, gop, finish_datetime,
-                "parca-soap-server", None, m
-                )
-    except bioformats.BioFormatException as e:
-        err = "ERROR: "+str(e.text)
-        log.error("Tried to get '%s' representaion of %d:%d: %s" % (fmt, job.id, no, e.text))
-    return err, s
-
-def get_raw_alignment(id, no):
-    session = Session()
-    query = session.query(ParcaJob).filter(ParcaJob.id==id)
-    if query.count()==0:
-        return None
-    job = query.first()
-    if job.status!=ST_DONE:
-        return None
-    res = json.loads(job.alignments)
-    if no>=len(res):
-        return None
-    return res[no]
-
-def get_alignments_summary(id):
-    session = Session()
-    query = session.query(
-        ParcaJob.comment,
-        ParcaJob.start_datetime,
-        ParcaJob.sequence1,
-        ParcaJob.sequence2,
-        ParcaJob.name1,
-        ParcaJob.name2,
-        ParcaJob.status,
-        ParcaJob.alignment_infos,
-        ParcaJob.matrix_name,
-        ParcaJob.gep,
-        ParcaJob.gap_limit
-        ).filter(ParcaJob.id==id)
-    if query.count()==0:
-        return None
-    comment, start, s1, s2, name1, name2, status, inf, matr, gep ,limit = query.first()
-    if status!=ST_DONE:
-        return None
-    inf = json.loads(inf)
-    als = []
-    for i in range(0, len(inf)):
-        item = inf[i]
-        item["no"] = i
-        als += [item]
-    result = {
-        "comment" : comment,
-        "sequence1": s1,
-        "sequence2": s2,
-        "name1": name1,
-        "name2": name2,
-        "matrix": matr,
-        "gep": gep,
-        "gap_limit": limit,
-        "alignments": als
-        }
-    return result
-
-def format_by_filename(filename):
-    return bioformats.detect_format(filename)
-
-def parse_sequences(buff, fmt):
-    err = ""
-    result = []
-    try:
-        result = bioformats.read_sequences_from_buffer(buff, fmt)
-    except bioformats.BioFormatException as e:
-        result = []
-        err = e.text
-    result = map(lambda x: {"id": x[0], "seq": x[1]}, result)
-    return err, result
+        result= ""
+    return {
+        "result": result,
+    }
 
 PROCS = []
 server = None
@@ -385,15 +302,6 @@ def exit_handler_main(a,b):
         log.info("Terminating worker "+str(proc.pid)+"...")
         proc.terminate()
     log.info("Bye!")
-
-def exit_handler_worker(a,b):
-    if not worker_job_id is None:
-        session = Session()
-        query = session.query(ParcaJob).filter(ParcaJob.id==worker_job_id).order_by(ParcaJob.accept_datetime).limit(1)
-        if query.count()>0:
-            job.status = ST_WAITING
-            session.commit()
-    sys.exit(0)
 
 import fcntl
 DB_FILE = None
@@ -419,14 +327,26 @@ def unlock_database(session):
         fcntl.flock(DB_FILE.fileno(), fcntl.LOCK_UN)
         DB_FILE.close()
         DB_FILE = None
+        
+        
+
+
+def exit_handler_worker(a,b):
+    if not worker_job_id is None:
+        session = Session()
+        query = session.query(RnaJob).filter(RnaJob.id==worker_job_id).order_by(RnaJob.accept_datetime).limit(1)
+        if query.count()>0:
+            job.status = ST_WAITING
+            session.commit()
+    sys.exit(0)
 
 if __name__=="__main__" and "--init" in sys.argv:
-    ParcaJob.metadata.create_all(engine)
+    RnaJob.metadata.create_all(engine)
 
 elif __name__=="__main__" and "--worker" in sys.argv:
-    log.info("Worker %d bootstrapping" % os.getpid())
+    log.info("Worker %d boostrapping" % os.getpid())
     try:
-        ParcaJob.metadata.create_all(engine)
+        RnaJob.metadata.create_all(engine)
     except sqlalchemy.exc.OperationalError as e:
         sys.exit(1)
         log.error("Worker %d: can't open database: %s" % (os.getpid(), str(e)))
@@ -436,7 +356,7 @@ elif __name__=="__main__" and "--worker" in sys.argv:
     while True:
         session = Session()
         lock_database(session)
-        query = session.query(ParcaJob).filter(ParcaJob.status==ST_WAITING).order_by(ParcaJob.accept_datetime).limit(1)
+        query = session.query(RnaJob).filter(RnaJob.status==ST_WAITING).order_by(RnaJob.accept_datetime).limit(1)
         if query.count()==0:
             unlock_database(session)
             session.commit()
@@ -449,14 +369,14 @@ elif __name__=="__main__" and "--worker" in sys.argv:
                 worker_job_id = job.id
                 session.commit()
                 unlock_database(session)
-                process_job(job, session)
+                if not job is None:
+                    process_job(job, session)
                 worker_job_id = None
         del session
-    
-            
+
 elif __name__=="__main__" and not "--worker" in sys.argv:
     try:
-        ParcaJob.metadata.create_all(engine)
+        RnaJob.metadata.create_all(engine)
     except sqlalchemy.exc.OperationalError as e:
         log.error("Can't open database: "+str(e)+". Exiting...")
         if PIDFILE and os.path.exists(PIDFILE):
@@ -483,13 +403,12 @@ elif __name__=="__main__" and not "--worker" in sys.argv:
     server.registerFunction(get_job_status)
     server.registerFunction(list_jobs_for_ip)
     server.registerFunction(list_all_jobs)
-    server.registerFunction(get_alignments_count)
-    server.registerFunction(get_raw_alignment)
-    server.registerFunction(get_alignment_as_string)
-    server.registerFunction(get_alignments_summary)
-    server.registerFunction(get_error)
+    server.registerFunction(get_result)
     server.registerFunction(format_by_filename)
     server.registerFunction(parse_sequences)
+    server.registerFunction(get_error)
+
+
     try:
         server.serve_forever()
     except select.error:
@@ -501,5 +420,3 @@ elif __name__=="__main__" and not "--worker" in sys.argv:
     
 
 
-
-    

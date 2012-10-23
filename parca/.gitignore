@@ -2,4 +2,9 @@ build
 build/*
 *.user
 *.kdev4
+*.db
+*.sqlite*
+*.py?
+*.o
+*.so
 

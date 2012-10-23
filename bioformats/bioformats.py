@@ -12,6 +12,8 @@ from Bio import SeqIO, AlignIO
 import os.path
 import string
 from cStringIO import StringIO
+import warnings
+warnings.filterwarnings("ignore")
 
 FORMATS = [ "fasta", "fastq", "fastcd", "clustal", "genbank", "embl", "bed", "gff" ]
 
@@ -60,6 +62,8 @@ def detect_format(filename):
     ext = ext.lower()
     if ext in [".fasta", ".fa", ".seq", ".fsa", ".fna", ".ffn", ".faa", ".frn"]:
         return "fasta"
+    elif ext in [".fastcd"]:
+        return "fastcd"
     elif ext in [".fq", ".fastq"]:
         return "fastq"
     elif ext in [".clustal", ".clustalw", ".clustalx", ".aln"]:
@@ -146,6 +150,30 @@ from datetime import datetime
 
 OUT_FORMATS = ["fasta", "fastq", "clustal", "emboss"]
 
+def __alignment_to_fastq_string__(
+    source,
+    mutant,
+    alignment,
+    name1,
+    name2
+):
+    S1 = ""
+    S1S = ""
+    S2 = ""
+    S2S = ""
+    for a, b in alignment:
+        ch1 = "-"
+        ch2 = "-"
+        if a!=-1:
+            ch1 = source[a]
+        if b!=-1:
+            ch2 = source[b]
+        S1 += ch1
+        S2 += ch2
+        S1S += ";"
+        S2S += ";"
+    return "@"+name1+"\n"+S1+"\n+\n"+S1S+"\n@"+name2+"\n"+S2+"\n+\n"+S2S+"\n"
+
 def __alignment_to_emboss_string__(
     source,
     mutant,
@@ -214,10 +242,10 @@ def __alignment_to_emboss_string__(
         sp = spe + 1
         fpe = fp + len(line1_part)-line1_part.count("-")
         spe = sp + len(line3_part)-line3_part.count("-")
-        result += str(fp).rjust(7)+" "+line1_part.rjust(7) + \
+        result += str(fp).rjust(7)+" "+line1_part + \
             "  "+ str(fpe)+"\n"
         result += " "*8+line2_part.ljust(50) + "\n"
-        result += str(sp).rjust(7)+" "+line3_part.rjust(7) + \
+        result += str(sp).rjust(7)+" "+line3_part + \
             "  "+ str(spe)+"\n"
         result += "\n"
         sp = spe
@@ -308,9 +336,11 @@ def proteins_alignment_to_string(
     fmt = fmt.lower()
     if not fmt in OUT_FORMATS:
         raise BioFormatException("Unknown output format '"+fmt+"'")
-    if fmt!="emboss":
+    if fmt!="emboss" and fmt!="fastq":
         align = proteins_alignment_to_biopython(al, seq1, seq2, name1, name2)
         return align.format(fmt)
+    elif fmt=="fastq":
+        return __alignment_to_fastq_string__(seq1, seq2, al, name1, name2)
     else:
         return __alignment_to_emboss_string__(seq1, seq2, al, name1, name2,
                                               weights, matrixname, gep, gop,
