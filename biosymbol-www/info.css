@@ -1,0 +1,128 @@
+body {
+    font-size: 12pt;
+    font-family: Times New Roman, Garamond, Droid Serif, DejaVu Serif, serif;
+    background: #eeeeee;
+}
+
+
+a {
+    color: black;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.logo {
+    position: absolute;
+    height: 1cm;
+    left: 1cm;
+    right: 1cm;
+    top: 0.5cm;
+    padding: 2mm;
+    background: lightblue;
+    border: 1px solid black;
+    font-size: 8mm;
+    font-variant: small-caps;
+    text-align: center;
+}
+
+.nav {
+    position: absolute;
+    left: 1cm;
+    right: 1cm;
+    top: 2cm;
+    height: 1cm;
+    padding-top: 2mm;
+    height: 8mm;
+    text-align: center;
+    border-bottom: 1px solid black;
+}
+
+.nav-item {
+    display: inline-block;
+    margin-left: 5mm;
+    margin-right: 5mm;
+}
+
+.footer {
+    display: block;
+    position: fixed;
+    left: 1cm;
+    right: 1cm;
+    bottom: 0;
+    font-size: 3mm;
+    padding: 1mm;
+    padding-top: 3mm;
+    text-align: right;
+    background: #eeeeee;
+    z-index: 1;
+}
+
+.content {
+    position: absolute;
+    left: 1cm;
+    right: 1cm;
+    top: 3cm;
+    padding-bottom: 1.5cm;
+    text-align: justify;
+    text-indent: 1cm;
+    line-height: 18pt;
+}
+
+.content h1 {
+    text-align: center;
+    text-indent: 0;
+    font-variant: small-caps;
+    font-size: 24pt;
+    line-height: 36pt;
+    margin-top: 36pt;
+    margin-bottom: 24pt;
+}
+
+.content ol {
+    list-style-position: inside;
+}
+
+.content li {
+    text-indent: 0;
+}
+
+.content em {
+    font-style: normal;
+    font-weight: bold;
+    color: #222222;
+    font-family: Arial, Verdana, Droid Sans, DejaVu Sans, sans-serif;
+}
+
+.launch-button {
+    text-align: center;
+    text-indent: 0;
+    font-family: sans-serif, Arial, Verdana, Droid Sans, DejaVu Sans;
+    display: inline-block;
+    width: 10cm;
+    border: 1px solid black;
+    border-radius: 3mm;
+    padding: 3mm;
+    background: lightgreen;
+}
+
+.launch-button:hover {
+    text-decoration: none;
+    background: yellow;
+}
+
+.launch-button-text {
+    font-size: 16pt;
+}
+
+.launch-button-hint {
+    font-size: 10pt;
+    font-weight: normal;
+}
+
+.theorem {
+    letter-spacing: 1mm;
+}

@@ -1,0 +1,60 @@
+########################################
+# Program:  selftest
+########################################
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: 1qpg
+# 2: 16pk
+# Matrix: EBLOSUM62
+# Gap_penalty: from 151.0 to 99999999.9
+# Extend_penalty: 1.0
+#
+# Length: 415
+# Identity:       415/415 (100.0%)
+# Similarity:     415/415 (100.0%)
+# Gaps:              0/415 ( 0.0%)
+# Score: 769.0
+#
+#
+#=======================================
+
+      1 SLSSKLSVQDLDLKDKRVFIRVDFNVPLDGKKITSNQRIVAALPTIKYVL  51
+        :::|:::::::::|::::::::::::::::::::::::::::|:::::::
+      1 EKKSINECDLKGKKVLIRVDFNVPVKNGKITNDYRIRSALPTLKKVLTEG  51
+
+     52 EHHPRYVVLASHLGQPNGERNEKYSLAPVAKELQSLLGKDVTFLNDCVGP  102
+        ::::::::|::::|:|::::::::|:::|::::|::::|:|:::::::::
+     52 GSCVLMSHLGRPKGIPMAQAGKIRSTGGVPGFQQKATLKPVAKRLSELLL  102
+
+    103 EVEAAVKASAPGSVILLENLRYHIEEEGSRKVDGQKVKASKEDVQKFRHE  153
+        ::::::::::::::::::::::::::::::::::::::::::|:::::::
+    103 RPVTFAPDCLNAADVVSKMSPGDVVLLENVRFYKEEGSKKAKDREAMAKI  153
+
+    154 LSSLADVYINDAFGTAHRAHSSMVGFDLPQRAAGFLLEKELKYFGKALEN  204
+        |:|::||||:||||||||::::|:|::::::::::::::|::::::|:::
+    154 LASYGDVYISDAFGTAHRDSATMTGIPKILGNGAAGYLMEKEISYFAKVL  204
+
+    205 PTRPFLAILGGAKVADKIQLIDNLLDKVDSIIIGGGMAFTFKKVLENTEI  255
+        :::|:::::::::::::::::::::::::::::::|:|::::::::::::
+    205 GNPPRPLVAIVGGAKVSDKIQLLDNMLQRIDYLLIGGAMAYTFLKAQGYS  255
+
+    256 GDSIFDKAGAEIVPKLMEKAKAKGVEVVLPVDFIIADAFSADANTKTVTD  306
+        ::::::::::::::::::|::::::::|::::::::::::::::::::|:
+    256 IGKSKCEESKLEFARSLLKKAEDRKVQVILPIDHVCHTEFKAVDSPLITE  306
+
+    307 KEGIPAGWQGLDNGPESRKLFAATVAKAKTIVWNGPPGVFEFEKFAAGTK  357
+        :::||:|:::||:||::::::::|::|:|:::||||:||||::::::||:
+    307 DQNIPEGHMALDIGPKTIEKYVQTIGKCKSAIWNGPMGVFEMVPYSKGTF  357
+
+    358 ALLDEVVKSSAAGNTVIIGGGDTATVAKKYGVTDKISHVSTGGGASLELL  408
+        |::::::::::::::::|:||:::::|:::::::|:::::::||:::::|
+    358 AIAKAMGRGTHEHGLMSIIGGGDSASAAELSGEAKRMSHVSTGGGASLEL  408
+
+    409 EGKELPGVAFLSEKK  424
+        ::::::::::::::|                                   
+    409 LEGKTLPGVTVLDDK  424
+
+
+#---------------------------------------
+#---------------------------------------

@@ -1,0 +1,60 @@
+########################################
+# Program:  selftest
+########################################
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: 1qpg
+# 2: 16pk
+# Matrix: EBLOSUM62
+# Gap_penalty: from 109.0 to 151.0
+# Extend_penalty: 1.0
+#
+# Length: 417
+# Identity:        413/417 (99.0%)
+# Similarity:      413/417 (99.0%)
+# Gaps:              4/417 ( 1.0%)
+# Score: 1071.0
+#
+#
+#=======================================
+
+      1 SLSSKLSVQDLDLKDKRVFIRVDFNVPLDGKKITSNQRIVAALPTIKYVL  51
+        :::|:::::::::|::::::::::::::::::::::::::::|:::::::
+      1 EKKSINECDLKGKKVLIRVDFNVPVKNGKITNDYRIRSALPTLKKVLTEG  51
+
+     52 EHHPRYVVLASHLGQPNGERNEKYSLAPVAKELQSLLGKDVTFLNDCVGP  102
+        ::::::::|::::|:|::::::::|:::|::::|::::|:|:::::::::
+     52 GSCVLMSHLGRPKGIPMAQAGKIRSTGGVPGFQQKATLKPVAKRLSELLL  102
+
+    103 EVEAAVKASAPGSVILLENLRYHIEEEGSRKVDGQKVKASKEDVQKFRHE  153
+        ::::::::::::::::::::::::::::::::::::::::::|:::::::
+    103 RPVTFAPDCLNAADVVSKMSPGDVVLLENVRFYKEEGSKKAKDREAMAKI  153
+
+    154 LSSLADVYINDAFGTAHRAHSSMVGFD--LPQRAAGFLLEKELKYFGKAL  202
+        |:|::||||:||||||||::::|:|::  |...|||:|.|||..||:|.|
+    154 LASYGDVYISDAFGTAHRDSATMTGIPKILGNGAAGYLMEKEISYFAKVL  204
+
+    203 ENPTRPFLAILGGAKVADKIQLIDNLLDKVDSIIIGGGMAFTFKKVLENT  253
+        .||.||.:||.|||||.|||||.||.|...|.:.|||:||:||.|...:.
+    205 GNPPRPLVAIVGGAKVSDKIQLLDNMLQRIDYLLIGGAMAYTFLKAQGYS  255
+
+    254 EIGDSIFDKAGAEIVPKLMEKAKAKGVEVVLPVDFIIADAFSADANTKTV  304
+        ..:......:.......|..::::|.:.:.:...:..:.:.::|:  :::
+    256 IGKSKCEESKLEFARSLLKKAEDRKVQVILPIDHVCHTEFKAVDS--PLI  304
+
+    305 TDKEGIPAGWQGLDNGPESRKLFAATVAKAKTIVWNGPPGVFEFEKFAAG  355
+        |::::||:|:::||:||::::::::|::|:|:::||||:||||::::::|
+    305 TEDQNIPEGHMALDIGPKTIEKYVQTIGKCKSAIWNGPMGVFEMVPYSKG  355
+
+    356 TKALLDEVVKSSAAGNTVIIGGGDTATVAKKYGVTDKISHVSTGGGASLE  406
+        |:|::::::::::::::::|:||:::::|:::::::|:::::::||::::
+    356 TFAIAKAMGRGTHEHGLMSIIGGGDSASAAELSGEAKRMSHVSTGGGASL  406
+
+    407 LLEGKELPGVAFLSEKK  424
+        :|::::::::::::::|                                 
+    407 ELLEGKTLPGVTVLDDK  424
+
+
+#---------------------------------------
+#---------------------------------------

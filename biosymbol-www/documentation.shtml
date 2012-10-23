@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" value="IE=9">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Документация СИМВОЛ</title>
+    <link type="text/css" rel="stylesheet" href="info.css"/>
+</head>
+
+<body>
+
+<!--#include virtual="common.shtml" -->
+
+<div class="content">
+    <h1>Документация</h1>
+    <p><a href="19.505-79.pdf">Руководство оператора</a> в соответствии с
+    ГОСТ&nbsp;19.505-79</p>
+    <p><a href="19.504-79.pdf">Руководство программиста</a> в соответствии с
+    ГОСТ&nbsp;19.504-79</p>
+    <p><a href="19.503-79.pdf">Руководство системного программиста</a> в соответствии с
+    ГОСТ&nbsp;19.503-79</p>
+</div>
+
+</body>
+</html>

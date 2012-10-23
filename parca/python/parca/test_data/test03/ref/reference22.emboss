@@ -1,0 +1,60 @@
+########################################
+# Program:  selftest
+########################################
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: 1qpg
+# 2: 16pk
+# Matrix: EBLOSUM62
+# Gap_penalty: n/a
+# Extend_penalty: 1.0
+#
+# Length: 443
+# Identity:        387/443 (87.4%)
+# Similarity:      387/443 (87.4%)
+# Gaps:             56/443 (12.6%)
+# Score: 1814.0
+#
+#
+#=======================================
+
+      1 SLSSKLSVQDLDLKDKRVFIRVDFNVPL-DGKKITSNQRIVAALPTIKYV  50
+        :   |.|..::|||:|:|.||||||||. .|| ||:..||..||||:|.|
+      1 E---KKSINECDLKGKKVLIRVDFNVPVKNGK-ITNDYRIRSALPTLKKV  47
+
+     51 L-EHHPRYVVLASHLGQPNG----E----RN--------EKYSLAPVAKE  84
+        | |.:.  .||.||||:|.|    :    |:        :|..|.||||.
+     48 LTEGGS--CVLMSHLGRPKGIPMAQAGKIRSTGGVPGFQQKATLKPVAKR  96
+
+     85 LQSLLGKDVTFLNDCVGPEVEAAVKASAPGSVILLENLRYHIEEEGSRKV  135
+        |:.||.:.|||::||:.. ....:|.| ||.|.||||.|.. .||||.|.
+     97 LSELLLRPVTFAPDCLNA-ADVVSKMS-PGDVVLLENVRFY-KEEGSKKA  144
+
+    136 DGQKVKASKEDVQKFRHELSSLADVYINDAFGTAHRAHSSMVGFDLPQ--  184
+           |   :.|..:|.   |:|::||||:||||||||::::|:|  :|.  
+    145 ---K---DREAMAKI---LASYGDVYISDAFGTAHRDSATMTG--IPKIL  184
+
+    185 --RAAGFLLEKELKYFGKALENPTRPFLAILGGAKVADKIQLIDNLLDKV  233
+          .|||:|.|||..||:|.|.||.||.:||.|||||.|||||.||.|...
+    185 GNGAAGYLMEKEISYFAKVLGNPPRPLVAIVGGAKVSDKIQLLDNMLQRI  235
+
+    234 DSIIIGGGMAFTFKKVLENTEIGDSIFDKAGAEIVPKLMEKAKAKGVEVV  284
+        |.:.|||:||:||.|. ::..||:|:...::.|:...|.:||....|.|:
+    236 DYLLIGGAMAYTFLKA-QGYSIGKSKCEESKLEFARSLLKKAEDRKVQVI  285
+
+    285 LPVDFIIADAFSADANTKTVTDKEGIPAGWQGLDNGPESRKLFAATVAKA  335
+        ||.|::....|:| ::::::|::::||:|:::||:||::::::::|::|:
+    286 LPIDHVCHTEFKA-VDSPLITEDQNIPEGHMALDIGPKTIEKYVQTIGKC  335
+
+    336 KTIVWNGPPGVFEFEKFAAGTKALLDEVVKSSAAGNT----V--IIGGGD  380
+        |:::||||:||||::::::||:|    ::|:.:.| |    :  ||||||
+    336 KSAIWNGPMGVFEMVPYSKGTFA----IAKAMGRG-THEHGLMSIIGGGD  381
+
+    381 TATVAKKYGVTDKISHVSTGGGASLELLEGKELPGVAFLSEKK  424
+        :|::|:..|:....|||||||||||||||||.||||.:|::|        
+    382 SASAAELSGEAKRMSHVSTGGGASLELLEGKTLPGVTVLDDK-  424
+
+
+#---------------------------------------
+#---------------------------------------

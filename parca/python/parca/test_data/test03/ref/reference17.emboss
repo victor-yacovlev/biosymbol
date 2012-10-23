@@ -1,0 +1,60 @@
+########################################
+# Program:  selftest
+########################################
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: 1qpg
+# 2: 16pk
+# Matrix: EBLOSUM62
+# Gap_penalty: from  4.0 to  5.0
+# Extend_penalty: 1.0
+#
+# Length: 440
+# Identity:        390/440 (88.6%)
+# Similarity:      390/440 (88.6%)
+# Gaps:             50/440 (11.4%)
+# Score: 1795.0
+#
+#
+#=======================================
+
+      1 SLSSKLSVQDLDLKDKRVFIRVDFNVPLDGKKITSNQRIVAALPTIKYVL  51
+        :   |.|..::|||:|:|.||||||||....|||:..||..||||:|.||
+      1 E---KKSINECDLKGKKVLIRVDFNVPVKNGKITNDYRIRSALPTLKKVL  48
+
+     52 EHHPRYVVLASHLGQPNG----E----RN--------EKYSLAPVAKELQ  86
+        ....: .||.||||:|.|    :    |:        :|..|.||||.|:
+     49 TEGGS-CVLMSHLGRPKGIPMAQAGKIRSTGGVPGFQQKATLKPVAKRLS  98
+
+     87 SLLGKDVTFLNDCVGPEVEAAVKASAPGSVILLENLRYHIEEEGSRKVDG  137
+        .||.:.|||::||:.. ....:|.| ||.|.||||.|.. .||||.|.  
+     99 ELLLRPVTFAPDCLNA-ADVVSKMS-PGDVVLLENVRFY-KEEGSKKA--  144
+
+    138 QKVKASKEDVQKFRHELSSLADVYINDAFGTAHRAHSSMVGFDLPQ----  184
+         |   :.|..:|.   |:|::||||:||||||||::::|:|  :|.    
+    145 -K---DREAMAKI---LASYGDVYISDAFGTAHRDSATMTG--IPKILGN  186
+
+    185 RAAGFLLEKELKYFGKALENPTRPFLAILGGAKVADKIQLIDNLLDKVDS  235
+        .|||:|.|||..||:|.|.||.||.:||.|||||.|||||.||.|...|.
+    187 GAAGYLMEKEISYFAKVLGNPPRPLVAIVGGAKVSDKIQLLDNMLQRIDY  237
+
+    236 IIIGGGMAFTFKKVLENTEIGDSIFDKAGAEIVPKLMEKAKAKGVEVVLP  286
+        :.|||:||:||.|. ::..||:|:...::.|:...|.:||....|.|:||
+    238 LLIGGAMAYTFLKA-QGYSIGKSKCEESKLEFARSLLKKAEDRKVQVILP  287
+
+    287 VDFIIADAFSADANTKTVTDKEGIPAGWQGLDNGPESRKLFAATVAKAKT  337
+        .|::....|:| ::::::|::::||:|:::||:||::::::::|::|:|:
+    288 IDHVCHTEFKA-VDSPLITEDQNIPEGHMALDIGPKTIEKYVQTIGKCKS  337
+
+    338 IVWNGPPGVFEFEKFAAGTKALLDEVVKSSAAGN-----TVIIGGGDTAT  383
+        ::||||:||||::::::||:|    ::|:.:.|:     ::||||||:|:
+    338 AIWNGPMGVFEMVPYSKGTFA----IAKAMGRGTHEHGLMSIIGGGDSAS  384
+
+    384 VAKKYGVTDKISHVSTGGGASLELLEGKELPGVAFLSEKK  424
+        :|:..|:....|||||||||||||||||.||||.:|::|           
+    385 AAELSGEAKRMSHVSTGGGASLELLEGKTLPGVTVLDDK-  424
+
+
+#---------------------------------------
+#---------------------------------------

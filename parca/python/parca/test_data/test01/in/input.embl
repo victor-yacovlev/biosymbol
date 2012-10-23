@@ -1,0 +1,22 @@
+ID   16PK standard; PROTEIN; PREFAB; 415 BP.
+XX
+SQ   Sequence 415 BP;
+     ekksinecdl kgkkvlirvd fnvpvkngki tndyrirsal ptlkkvlteg gscvlmshlg        60
+     rpkgipmaqa gkirstggvp gfqqkatlkp vakrlselll rpvtfapdcl naadvvskms       120
+     pgdvvllenv rfykeegskk akdreamaki lasygdvyis dafgtahrds atmtgipkil       180
+     gngaagylme keisyfakvl gnpprplvai vggakvsdki qlldnmlqri dylliggama       240
+     ytflkaqgys igkskceesk lefarsllkk aedrkvqvil pidhvchtef kavdsplite       300
+     dqnipeghma ldigpktiek yvqtigkcks aiwngpmgvf emvpyskgtf aiakamgrgt       360
+     hehglmsiig ggdsasaael sgeakrmshv stgggaslel legktlpgvt vlddk            415
+//
+ID   1QPG standard; PROTEIN; PREFAB; 415 BP.
+XX
+SQ   Sequence 415 BP;
+     slssklsvqd ldlkdkrvfi rvdfnvpldg kkitsnqriv aalptikyvl ehhpryvvla        60
+     shlgqpnger nekyslapva kelqsllgkd vtflndcvgp eveaavkasa pgsvillenl       120
+     ryhieeegsr kvdgqkvkas kedvqkfrhe lssladvyin dafgtahrah ssmvgfdlpq       180 
+     raagflleke lkyfgkalen ptrpflailg gakvadkiql idnlldkvds iiigggmaft       240
+     fkkvlentei gdsifdkaga eivpklmeka kakgvevvlp vdfiiadafs adantktvtd       300
+     kegipagwqg ldngpesrkl faatvakakt ivwngppgvf efekfaagtk alldevvkss       360 
+     aagntviigg gdtatvakky gvtdkishvs tgggaslell egkelpgvaf lsekk            415
+//

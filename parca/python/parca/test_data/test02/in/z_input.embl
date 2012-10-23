@@ -1,0 +1,22 @@
+ID   16PK standard; PROTEIN; PREFAB; 415 BP.
+XX
+SQ   Sequence 415 BP;
+     ekksinecdl kgkkvlirvd fnvpvkngki tndyrirszl ptlkkvlteg gscvlmshlg        60
+     rpkgipmzqz gkirstggvp gfqqkztlkp vzkrlselll rpvtfzpdcl nzzdvvskms       120
+     pgdvvllenv rfykeegskk zkdrezmzki lzsygdvyis dzfgtzhrds ztmtgipkil       180
+     gngzzgylme keisyfzkvl gnpprplvzi vggzkvsdki qlldnmlqri dylliggzmz       240
+     ytflkzqgys igkskceesk lefzrsllkk zedrkvqvil pidhvchtef kzvdsplite       300
+     dqnipeghmz ldigpktiek yvqtigkcks ziwngpmgvf emvpyskgtf zizkzmgrgt       360
+     hehglmsiig ggdszszzel sgezkrmshv stgggzslel legktlpgvt vlddk            415
+//
+ID   16QPG standard; PROTEIN; PREFAB; 415 BP.
+XX
+SQ   Sequence 415 BP;
+     slssklsvqd ldlkdkrvfi rvdfnvpldg kkitsnqriv zzlptikyvl ehhpryvvlz        60
+     shlgqpnger nekyslzpvz kelqsllgkd vtflndcvgp evezzvkzsz pgsvillenl       120
+     ryhieeegsr kvdgqkvkzs kedvqkfrhe lsslzdvyin dzfgtzhrzh ssmvgfdlpq       180 
+     rzzgflleke lkyfgkzlen ptrpflzilg gzkvzdkiql idnlldkvds iiigggmzft       240
+     fkkvlentei gdsifdkzgz eivpklmekz kzkgvevvlp vdfiizdzfs zdzntktvtd       300
+     kegipzgwqg ldngpesrkl fzztvzkzkt ivwngppgvf efekfzzgtk zlldevvkss       360 
+     zzgntviigg gdtztvzkky gvtdkishvs tgggzslell egkelpgvzf lsekk            415
+//

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" value="IE=9">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Веб-приложение СИМВОЛ</title>
+    <link type="text/css" rel="stylesheet" href="info.css"/>
+    <script type="text/javascript">
+        function goDown() {
+            var endPos = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+            window.scrollTo(0, endPos);
+        }
+    </script>
+    <style type="text/css">
+        .link {
+            font-weight: bold;
+        }
+        .link:hover {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<!--#include virtual="common.shtml" -->
+<div class="content">
+    <h1>Web-Приложение</h1>
+    <p style="text-align: center; text-indent: 0;">Кнопка для запуска Web-приложения находится <span class="link" onclick="goDown()">внизу страницы</span>.</p>   
+    <h2>Работа с Web-приложением</h2>
+    <p>Подробное описание работы с Web-приложением приводится в "Руководстве оператора".
+    Ниже приводится краткое описание.</p>
+    <p>Web-приложение выполняется в одном из следующих браузеров:</p>
+    <ol>
+        <li><a href="">Microsoft Internet Explorer</a> версии не ниже 9.0</li>
+        <li><a href="">Google Chrome</a> версии не ниже 11.0</li>
+        <li><a href="">Mozilla Firefox</a> версии не ниже 4.0</li>
+        <li><a href="">Opera Browser</a> версии не ниже 11.0</li>
+    </ol>
+    <h2>Главная страница программы</h2>
+    <p>Окно программы состоит из двух частей: (1) списка задач (на рисунке выделено зеленым цветом),
+    и (2) формы запуска новой задачи (на рисунке выделено синим цветом).</p>
+    <p style="text-align: center"><img src="images/fig1.png"/></p>
+    <h2>Запуск новой задачи</h2>
+    <style type="text/css">
+        .inline-img {
+            position: relative;
+            border: 1px solid black;
+            top: 3mm;
+            margin-bottom: 4px;
+        }
+    </style>
+    <p>Для запуска новой задачи раскройте вложенную форму, соответствующую инструменту из состава ЭО ПК:</p>
+    <ol>
+        <li><em>PARCA</em> - для построения парного глобального выравнивания аминокислотных последовательностей.
+        </li>
+        <li><em>SufPref</em> - для определения статистической значимости кластера мотивов для символьных последовательностей.
+        </li>
+        <li><em>RNA</em> - для выделения фрагментов генома, содержащих некодирующие РНК-гены,
+                на основе предсказания элементов вторичной структуры геномной
+                последовательности.
+        </li>
+    </ol>
+    <p>Раскрытие вложенной формы производится нажатием на соответствующий заголовок.</p>
+    <p style="text-align: center">
+        <img src="images/newtask.png"/>
+    </p>
+    <p>После этого - заполните поля формы и нажмите кнопку <em>Submit&nbsp;New&nbsp;Task</em>.
+    В случае ввода некорректных данных - будет выведено сообщение об ошибке. При вводе корректных данных - сообщение
+    с указанием номера задачи <em>ID</em>.
+    </p>
+    <h2>Отслеживание завершения выполнения задачи</h2>
+    <p>При успешном завершении выполнения задачи, в поле <em>Status</em> таблицы списка задач
+    появится сообщение <em>DONE</em> напротив задачи с соответствующим номером <em>ID</em>.
+    </p>
+    <p style="text-align: center"><img src="images/fig2.png"/></p>
+    <h2>Просмотр результата работы</h2>
+    <p>Для просмотра отчета, содержащего результат выполнения задачи, необходимо нажать на строку задачи в списке.</p>
+    <p>В зависимости от харатека выполненной задачи, окно результата может отображаться в виде: (а) текстового отчета, (б)
+    таблицы или (в) интерактивной формы.</p>
+    <p>Для возврата к главной странице приложения предназначена кнопка <em>Go&nbsp;back&nbsp;to&nbsp;task&nbsp;list</em>
+    в правом верхнем углу страницы. Навигация также возможна с помощью соответствующих кнопок веб-браузера.</p>
+    <p style="text-align: center"><img src="images/results.png"/></p>
+    
+    <h2>Сохранение результата работы</h2>
+    <p>В каждом из из трех видов отображения отчета имеется кнопка <em>Save&nbsp;to&nbsp;file...</em>. Нажатие этой кнопки приводит к
+    формированию файла с результатом и его загрузке на локальный компьютер.</p>
+    <p><span class="theorem">Замечание 1.</span> В случае использования модуля построения парного глобального выравнивания,
+    кнопка <em>Save&nbsp;to&nbsp;file...</em> становится доступна только после выбора конкретного выравнивания из списка или
+    на графике. В файл сохраняется только выбранное выравнивание.</p>
+    <p><span class="theorem">Замечание 2.</span> Настройки по умолчанию для многих браузеров подразумевают загрузку файлов
+    в стандартный каталог загрузок. Для указания целевого каталога загрузки результата работы необходимо включить опцию запроса
+    каталога для сохранения.</p>
+    
+    <h2>Ссылка для запуска Web-приложения</h2>
+    <p style="text-align: center;text-indent: 0;">
+    <a class="launch-button"  href="app/" target="blank">
+        <span class="launch-button-text">Открыть Web-приложение</span><br>
+        <span class="launch-button-hint">(в новой вкладке браузера)</span>
+    </a>
+    </p>
+    <p>Web-приложение также может быть открыто по ссылке: 
+    <a href="app/index.html" id="webapplink" target="blank">
+        <script type="text/javascript">
+            function makeLocation() {
+                var location = window.location.href;
+                var slashPos = location.lastIndexOf("/");
+                var base = location.substr(0,slashPos);
+                return base + "/app/index.html";
+            }
+            document.write(makeLocation());
+        </script>
+    </a></p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" value="IE=9">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Символ</title>
+    <link rel="stylesheet" type="text/css" href="extjs/resources/css/ext-all.css" />
+    <style type="text/css">
+    .summary-wrap {
+        background: white;
+        padding-top: 5px;
+        padding-bottom: 0px;
+        padding-left: 25px;
+        padding-right: 25px;
+        text-align: left;
+    }
+    .summary-row {
+        font-size: 12px;
+        font-weight: bold;
+        display: inline;
+    }
+    .summary-title {
+        display: inline-block;
+        font-size: 28px;
+        font-variant: small-caps;
+        margin-bottom: 14px;
+        padding-right: 20px;
+    }
+    .summary-info {
+        padding-left: 20px;
+        display: inline-block;
+    }
+    .summary-label {
+        color: gray;
+    }
+    .summary-value {
+        color: black;
+    }
+    
+    .seqchooser-sequence-name {
+        display: block;
+        font-weight: bold;
+        border-bottom: 1px solid lightgray;
+        padding: 5px;
+    }
+    
+    .seqchooser-sequence-preview {
+        display: block;
+        font-family: monospace;
+        word-wrap: break-word;
+        padding: 5px;
+    }
+    
+    .seqchooser-message {
+        display: block;
+        padding: 5px;
+    }
+    
+    .seqchooser-file-error {
+        display: block;
+        color: red;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="loading_page" style="font-family:serif;width:100%;font-size:30px;position:absolute;text-align:center;top:50px;">
+        <p>Loading BioSymbol, please wait...<p>
+    <div>
+    <script type="text/javascript" src="extjs/ext-all-dev.js"></script>
+    <script type="text/javascript" src="js/Parca/NewTaskWindow.js"></script>
+    <script type="text/javascript" src="js/Parca/MainWidget.js"></script>
+    <script type="text/javascript" src="js/Parca/TaskDetailWindow.js"></script>
+    <script type="text/javascript" src="js/Parca/SequencesChooser.js"></script>
+    <script type="text/javascript" src="js/Sufpref/NewTaskWidget.js"></script>
+    <script type="text/javascript" src="js/Sufpref/TaskReportWindow.js"></script>
+    <script type="text/javascript" src="js/RNA/NewRNATaskWindow.js"></script>
+    <script type="text/javascript" src="js/RNA/TaskReportWindow.js"></script>
+    <script type="text/javascript" src="js/Symbol/MainWidget.js"></script>
+    
+ 
+    <div id="body"></div>
+    <script type="text/javascript">
+        String.prototype.trim=function(){return this.replace(/^\s\s*/, '').replace(/\s\s*$/, '');};
+	String.prototype.count=function(s1) { 
+	    return (this.length - this.replace(new RegExp(s1,"g"), '').length) / s1.length;
+	}
+        Ext.Loader.setConfig({enabled:true});
+        Ext.require('Ext.util.History');
+        Ext.require('Symbol.MainWidget');
+        Ext.require('Parca.TaskDetailWindow');
+        Ext.require('SufPref.TaskReportWindow');
+    
+        Ext.onReady(function(){
+        	
+            Ext.History.init();
+            Ext.History.on('change', function(token) {
+                if (token && token.split(":").length==3) {
+                    // Open modal window
+                    var parts = token.split(":");
+                    var windowClassName = parts[0];
+                    var toolname = parts[2];
+                    var taskId = parts[1];
+                    var symbol = Ext.getCmp("symbolMainWidget");
+                    symbol.showTaskDetailWindow(windowClassName, taskId, toolname);
+                }
+                else if (token && token.split(":").length==2) {
+		    // Open dialog
+                    var parts = token.split(":");
+                    var windowClassName = parts[0];
+                    var pageNo = parts[1];
+		    var symbol = Ext.getCmp("symbolMainWidget");
+		    symbol.showDialogWindow(windowClassName, parseInt(pageNo));
+		}
+		else if (token && token.split(":").length==1) {
+		    // Open dialog
+		    var symbol = Ext.getCmp("symbolMainWidget");
+		    symbol.showDialogWindow(token, 0);
+		}
+                else {
+                    // Show main window
+                    var symbol = Ext.getCmp("symbolMainWidget");
+                    symbol.hideAllModalWindows();
+                }
+            });
+            var symbol = Ext.create('Symbol.MainWidget');
+            Ext.TaskManager.start(symbol.checkWorker);
+            var loading_page = document.getElementById('loading_page');
+            loading_page.style.display = "none";
+        });
+        
+    </script>
+    <!-- Fields required for history management -->
+    <form id="history-form" class="x-hide-display">
+        <input type="hidden" id="x-history-field" />
+        <iframe id="x-history-frame"></iframe>
+    </form> 
+</body> 
+</html>

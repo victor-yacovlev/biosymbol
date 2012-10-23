@@ -1,0 +1,60 @@
+########################################
+# Program:  selftest
+########################################
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: 1qpg
+# 2: 16pk
+# Matrix: EBLOSUM62
+# Gap_penalty: n/a
+# Extend_penalty: 1.0
+#
+# Length: 449
+# Identity:        381/449 (84.9%)
+# Similarity:      381/449 (84.9%)
+# Gaps:             68/449 (15.1%)
+# Score: 1840.0
+#
+#
+#=======================================
+
+      1 SLSSKLSVQDLDLKDKRVFIRVDFNVPL-DGKKITSNQRIVAALPTIKYV  50
+        :  .| |..::|||:|:|.||||||||. .|| ||:..||..||||:|.|
+      1 E--KK-SINECDLKGKKVLIRVDFNVPVKNGK-ITNDYRIRSALPTLKKV  47
+
+     51 L-EHHPRYVVLASHLGQPNG----E----RN--------EKYSLAPVAKE  84
+        | |.:.  .||.||||:|.|    :    |:        :|..|.||||.
+     48 LTEGGS--CVLMSHLGRPKGIPMAQAGKIRSTGGVPGFQQKATLKPVAKR  96
+
+     85 LQSLLGKDVTFLNDCVGPEVEAA-V--KASAPGSVILLENLRYHIEEEGS  132
+        |:.||.:.|||::||:.    || |  |.| ||.|.||||.|.. .||||
+     97 LSELLLRPVTFAPDCLN----AADVVSKMS-PGDVVLLENVRFY-KEEGS  141
+
+    133 RKVDGQKVKASKEDVQKFRHELSSLADVYINDAFGTAHRAHSSMVGFDLP  183
+         |    |.| :.|..:|.   |:|::||||:||||||||::::|:|  :|
+    142 -K----KAK-DREAMAKI---LASYGDVYISDAFGTAHRDSATMTG--IP  181
+
+    184 Q---R-AAGFLLEKELKYFGKALENPTRPFLAILGGAKVADKIQLIDNLL  230
+        .   . |||:|.|||..||:|.|.||.||.:||.|||||.|||||.||.|
+    182 KILGNGAAGYLMEKEISYFAKVLGNPPRPLVAIVGGAKVSDKIQLLDNML  232
+
+    231 DKVDSIIIGGGMAFTFKKVLENTEIGDSIFDKAGAEIVPKLMEKAKAKGV  281
+        ...|.:.|||:||:||.|. ::..||:|:...::.|:...|.:||....|
+    233 QRIDYLLIGGAMAYTFLKA-QGYSIGKSKCEESKLEFARSLLKKAEDRKV  282
+
+    282 EVVLPVDFIIADAFSA-DANTKTVTDKEGIPAGWQGLDNGPES-RKLFAA  330
+        .|:||.|::....|:| |:  :::|::::||:|:::||:||:: :| :::
+    283 QVILPIDHVCHTEFKAVDS--PLITEDQNIPEGHMALDIGPKTIEK-YVQ  330
+
+    331 TVAKAKTIVWNGPPGVFEFEKFAAGTKALLDEVVKSSAAGN-T----V--  374
+        |::|:|:::||||:||||::::::||:|    ::|  |:|: |    :  
+    331 TIGKCKSAIWNGPMGVFEMVPYSKGTFA----IAK--AMGRGTHEHGLMS  375
+
+    375 IIGGGDTATVAKKYGVTDKISHVSTGGGASLELLEGKELPGVAFLSEKK  424
+        ||||||:|::|:..|:....|||||||||||||||||.||||.:|::|  
+    376 IIGGGDSASAAELSGEAKRMSHVSTGGGASLELLEGKTLPGVTVLDDK-  424
+
+
+#---------------------------------------
+#---------------------------------------

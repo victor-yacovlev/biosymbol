@@ -1,0 +1,60 @@
+########################################
+# Program:  selftest
+########################################
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: 1qpg
+# 2: 16pk
+# Matrix: EBLOSUM62
+# Gap_penalty: n/a
+# Extend_penalty: 1.0
+#
+# Length: 433
+# Identity:        397/433 (91.7%)
+# Similarity:      397/433 (91.7%)
+# Gaps:             36/433 ( 8.3%)
+# Score: 1603.0
+#
+#
+#=======================================
+
+      1 SLSSKLSVQDLDLKDKRVFIRVDFNVPLDGKKITSNQRIVAALPTIKYVL  51
+        :   |.|..::|||:|:|.||||||||....|||:..||..||||:|.||
+      1 E---KKSINECDLKGKKVLIRVDFNVPVKNGKITNDYRIRSALPTLKKVL  48
+
+     52 EHHPRYVVLASHLGQPNGER---------------NEKYSLAPVAKELQS  87
+        ....::|..:...::.:..:               .:|..|.||||.|:.
+     49 TEGGSCVLMSHLGRPKGIPMAQAGKIRSTGGVPGFQQKATLKPVAKRLSE  99
+
+     88 LLGKDVTFLNDCVGPEVEAAVKASAPGSVILLENLRYHIEEEGSRKVDGQ  138
+        ||.:.|||::||:..::....:.....:..            ::::::::
+    100 LLLRPVTFAPDCLNAADVVSKMSPGDVVLL------------ENVRFYKE  138
+
+    139 KVKASKEDVQKFRHELSSLADVYINDAFGTAHRAHSSMVGFD--LPQRAA  187
+        :::::::|:::::::|:|::||||:||||||||::::|:|::  |...||
+    139 EGSKKAKDREAMAKILASYGDVYISDAFGTAHRDSATMTGIPKILGNGAA  189
+
+    188 GFLLEKELKYFGKALENPTRPFLAILGGAKVADKIQLIDNLLDKVDSIII  238
+        |:|.|||..||:|.|.||.||.:||.|||||.|||||.||.|...|.:.|
+    190 GYLMEKEISYFAKVLGNPPRPLVAIVGGAKVSDKIQLLDNMLQRIDYLLI  240
+
+    239 GGGMAFTFKKVLENTEIGDSIFDKAGAEIVPKLMEKAKAKGVEVVLPVDF  289
+        ||:||:||.|. ::..||:|:...::.|:...|.:||....|.|:||.|:
+    241 GGAMAYTFLKA-QGYSIGKSKCEESKLEFARSLLKKAEDRKVQVILPIDH  290
+
+    290 IIADAFSADANTKTVTDKEGIPAGWQGLDNGPESRKLFAATVAKAKTIVW  340
+        :....|:| ::::::|::::||:|:::||:||::::::::|::|:|:::|
+    291 VCHTEFKA-VDSPLITEDQNIPEGHMALDIGPKTIEKYVQTIGKCKSAIW  340
+
+    341 NGPPGVFEFEKFAAGTKALLDEVVKSSAA-GNTVIIGGGDTATVAKKYGV  390
+        |||:||||::::::||:|::::::::::: |:::||||||:|::|:..|:
+    341 NGPMGVFEMVPYSKGTFAIAKAMGRGTHEHGLMSIIGGGDSASAAELSGE  391
+
+    391 TDKISHVSTGGGASLELLEGKELPGVAFLSEKK  424
+        ....|||||||||||||||||.||||.:|::|                  
+    392 AKRMSHVSTGGGASLELLEGKTLPGVTVLDDK-  424
+
+
+#---------------------------------------
+#---------------------------------------

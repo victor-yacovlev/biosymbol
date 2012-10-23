@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" value="IE=9">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Скачать СИМВОЛ</title>
+    <link type="text/css" rel="stylesheet" href="info.css"/>
+</head>
+
+<body>
+
+<!--#include virtual="common.shtml" -->
+
+<div class="content">
+    <h1>Скачать СИМВОЛ</h1>
+    <p><a href="biosymbol.tgz">biosymbol.tgz</a> - 
+    набор RPM-пакетов для openSUSE Linux (версия 11.4 и выше).</p>
+    <p><a href="biosymbol.exe">biosymbol.exe</a> - 
+    версия дл/ Windows&nbsp;XP, Vista, 7.
+    </p>
+    <p><a href="biosymbol-sources.zip">biosymbol-sources.zip</a> -
+    исходные тексты программного комплекса.
+    </p>
+</div>
+
+</body>
+</html>
