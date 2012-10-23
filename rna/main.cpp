@@ -13,8 +13,7 @@
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 
 
-#define SIBL 10
-;
+#define SIBL 50;
 #define DEBUG_D 0;//0 - minimal debug;1-norm debug; 2 - max debug;
 using namespace std;
 string RNA_data;
@@ -477,6 +476,7 @@ int createWordsList(int wordLen)
 	}
 	
 	int count=0;
+	
 	while (word.length()<wordLen+1)
     {
 		word=nextWord(word);
@@ -490,6 +490,7 @@ int createWordsList(int wordLen)
 		};
 		count++;
     };
+//cerr<<"WORDS:"<<count<<" wordLen"<<wordLen;
 	return count;
 }
 
@@ -538,6 +539,7 @@ void setPairs(long pos1, long pos2,string w1,string w2,resultPair *newPair)
 void findPairs()
 {
 	resultPr.clear();
+	//cerr<<"WORDS"<<words.size();
 	for(int i=0;i<words.size();i++)
 	{
 		string word=words.at(i);
@@ -577,7 +579,7 @@ void doDiag(long diag_id,int smd_id)
 		if(diagonals[i].empty())continue;
 		for(int j=0;j<diagonals[i].Diags()->size();j++)
 		{
-			//cout<<"Link:"<<diag_id<<" SIZE:"<<diagonals[i].Diags()->size()<<" sm:"<<smd_id;
+		//	cerr<<"Link:"<<diag_id<<" SIZE:"<<diagonals[i].Diags()->size()<<" sm:"<<smd_id;
 			if(i==diag_id && j==smd_id)continue;
 			if(diagonals[i].Diags()->at(j).hasTail())continue;
 			float score=curDiag->canLink(&diagonals[i].Diags()->at(j));
@@ -674,7 +676,7 @@ void createDiagsList()
 	{
 		if(diagonals[i].empty())continue;
 		//cout << endl;
-	//	cout<<"Diag summ="<<i<<endl;
+		//cout<<"Diag summ="<<i<<endl;
 		int k=0;
 		for(k;k<diagonals[i].Diags()->size();k++)
 		{diagsList.push_back(&diagonals[i].Diags()->at(k));
@@ -710,7 +712,7 @@ void createCleanList()
   	for(int i=0;i<diagsList.size();i++)
     {
 		
-	//	cout<<"Cur pos:"<<i<<endl;
+		//cout<<"Cur pos:"<<i<<endl;
 		if(!checkConfl(diagsList.at(i)))cleanList.push_back(diagsList.at(i));
 	}
 }
@@ -725,24 +727,44 @@ struct result
     }
 };
 
+void log(string log, int a=0)
+{return;
+ ofstream input_file ;
+ input_file.open("/var/log/biosymbol/rna_errrors.log", ios::out|ios::app);
+     if(input_file==NULL) cout<< "~~ERROR~~ input file "<<"\n";
+      input_file <<log << " = " << a;
+     input_file.close ();
+};
 typedef std::vector<result> myres;
-myres doAll(string data )
+myres doAll(string data,int frame,int jam,float gap,long start,long end, int seed)
 {
-	
-	long frame=2000;
-	int jam=1000;
-	long curpos=0,respos;
-	GAP_DMP=0.333;
-	while(curpos<data.size())
+	//frame=3000;
+	//int jam=1000;
+	//log("start");
+	//log("frame", frame);
+	//log("jam", jam);
+	//log("start", start);
+	//log("end", end);
+	//log("seed", seed);
+	if(jam>=frame)jam=frame/4;
+	long curpos=start,respos;
+	GAP_DMP=gap;
+	myres test;
+        result res;
+        	W_SIZE=seed;
+	Dmin=5;
+	if(end==-1)end=data.size();
+	while(curpos<end)
 	{
+		log("A");
 		words.clear();
 		diagonals.clear();
 		RNA_data=getFormString(&data,curpos,frame);
-		
+		log("B");
 		diagonals.resize(2*RNA_data.length());
-		//	cout <<"Data len:"<<RNA_data.length()<<endl;
+			
 		createWordsList(W_SIZE); //Создаем писок слов к каждому слову где встречается.
-		//	cout<<"get_pairs"<<endl;
+		log("C");
 		findPairs();
 	
 		diagGlue();
@@ -752,30 +774,22 @@ myres doAll(string data )
 		
 		
 		
-		//	cout<<"Start:"<< curpos<<"W LEN:"<<W_SIZE<<" GAP:1/"<<GAP_DMP<<endl;
+			//cerr<<"CPOS:"<<curpos<<endl;
 		
 		createDiagsList();
 		createCleanList();
+		log("D");
 		for(int i=0;i<cleanList.size();i++)
 		{
-			cout<<i<<","<<cleanList.at(i)->tailMinX()+curpos<<","<<cleanList.at(i)->tailMaxY()+curpos<<","<<cleanList.at(i)->diagScore()<<endl;
+		res.start=cleanList.at(i)->tailMinX()+curpos;
+		res.end=cleanList.at(i)->tailMaxY()+curpos;
+		res.score=cleanList.at(i)->diagScore();
+		test.push_back(res);
+			//cerr<<i<<","<<cleanList.at(i)->tailMinX()+curpos<<","<<cleanList.at(i)->tailMaxY()+curpos<<","<<cleanList.at(i)->diagScore()<<endl;
 		};
 		curpos=curpos+frame-jam;
+		//log("Frame done");
 	};
-
-    myres test;
-    result test_elem1, test_elem2;
-
-    test_elem1.start = 123;
-    test_elem1.end = 456;
-    test_elem1.score = 789;
-
-    test_elem2.start = 234;
-    test_elem2.end = 567;
-    test_elem2.score = 890;
-
-    test.push_back(test_elem1);
-    test.push_back(test_elem2);
     return test;
 	
 };

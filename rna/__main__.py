@@ -1,8 +1,13 @@
-#!/usr/bin/python
+#!/usr/bin/python2.7
 import _rna
 import bioformats
 import sys
 import argparse
+
+if "--selftest" in sys.argv:
+    import _test
+    # Module _test should exit program after tesing complete
+
 parser = argparse.ArgumentParser(description='ARG PRC');
 
 parser.add_argument("FILE",
@@ -39,6 +44,7 @@ wlen=3000;
 wshift=1000;
 minscore=19;
 
+
 if args.startfrom:
         sfrom=args.startfrom;
 
@@ -59,6 +65,7 @@ if args.wshift:
 
 if args.minscore:
         minscore=args.minscore-1;
+
 
 
 

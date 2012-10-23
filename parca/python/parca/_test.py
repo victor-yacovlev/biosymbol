@@ -15,7 +15,9 @@ try:
     assert sys.version_info.major==2
 except:
     failed[0] = True
-if failed[0]: sys.stderr.write("FAILED\n")
+if failed[0]:
+    sys.stderr.write("FAILED\n")
+    sys.exit(30)
 else: sys.stderr.write("PASSED\n")
 
 RESOURCE_PATH = os.path.dirname(__file__)+"/test_data"
