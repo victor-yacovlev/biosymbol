@@ -8,7 +8,7 @@ if "--selftest" in sys.argv:
     import _test
     # Module _test should exit program after tesing complete
 
-parser = argparse.ArgumentParser(description='ARG PRC');
+parser = argparse.ArgumentParser(prog="rna", description='ARG PRC');
 
 parser.add_argument("FILE",
                     help="File with RNA data.")
@@ -31,7 +31,7 @@ parser.add_argument("-l", "--wlen",type=int ,
 parser.add_argument("-w", "--wshift",type=int ,
                     help="Frame shift.")
                     
-parser.add_argument("-m", "--minscore",type=int ,
+parser.add_argument("-m", "--minscore",type=float,
                     help="Minimal score.")
 
 
@@ -42,7 +42,7 @@ seed=4
 dist=50;
 wlen=3000;
 wshift=1000;
-minscore=19;
+minscore=0.25;
 
 
 if args.startfrom:
@@ -64,16 +64,25 @@ if args.wshift:
         wshift=args.wshift;
 
 if args.minscore:
-        minscore=args.minscore-1;
+        minscore=args.minscore;
 
 
+try:
+    sequences = bioformats.read_sequences_from_file(args.FILE)
+except bioformats.BioFormatException as e:
+    sys.stderr.write("Error: "+e.text+"\n")
+    sys.exit(1)
 
+if not sequences:
+    sys.stderr.write("Error: file does not contain any sequence\n")
+    sys.exit(2)
 
-SS = "AAATTT"
-name, seq = bioformats.read_sequences_from_file(args.FILE)[0]
-res = _rna.doAll(seq.encode('ascii'),wlen,wshift,0.25,sfrom,10000,seed)
-#print seq
-print "Count", len(res)
+name, seq = sequences[0]
+res = _rna.doAll(seq.encode('ascii'),wlen,wshift,minscore,sfrom,10000,seed)
+
+import csv
+
+writer = csv.writer(sys.stdout, dialect="excel")
+writer.writerow(["start", "end", "score"])
 for a in res:
-    if a.score>minscore :
-          print "%d,%d,%d" % (a.start, a.end, a.score)
+    writer.writerow([a.start, a.end, a.score])
